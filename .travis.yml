@@ -1,0 +1,31 @@
+sudo: false
+
+dist: xenial
+
+addons:
+  apt:
+    packages:
+      - libgeos-c1v5
+
+language: python
+
+python:
+  - "2.7"
+
+services:
+  - mongodb
+
+before_install:
+  - pip install codecov
+
+install:
+  - pip install tox-travis
+
+after_success:
+  - codecov
+
+script:
+  - tox
+
+notifications:
+  email: true
