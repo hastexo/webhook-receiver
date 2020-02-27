@@ -3,15 +3,7 @@ import base64
 import hmac
 import logging
 
-from django.core.validators import validate_email
-from django.contrib.auth.models import User
-from opaque_keys.edx.keys import CourseKey
-from courseware.courses import get_course_by_id
-from lms.djangoapps.instructor.enrollment import (
-    get_user_email_language,
-    enroll_email,
-    get_email_params
-)
+from edx_webhooks.utils import enroll_in_course
 
 from .models import Order, OrderItem
 
@@ -84,49 +76,10 @@ def process_line_item(order, item):
 
     # Create an enrollment for the line item
     if order_item.status == OrderItem.UNPROCESSED:
-        auto_enroll_email(sku, email)
+        enroll_in_course(sku, email)
 
     # Mark the item as processed
     order_item.status = OrderItem.PROCESSED
     order_item.save()
 
     return order_item
-
-
-def auto_enroll_email(course_id,
-                      email,
-                      send_email=True):
-    """
-    Auto-enroll email in course.
-
-    Based on lms.djangoapps.instructor.views.api.students_update_enrollment()
-    """
-    # Raises ValidationError if invalid
-    validate_email(email)
-
-    course_id = CourseKey.from_string(course_id)
-    course = get_course_by_id(course_id)
-
-    # If we want to notify the newly enrolled student by email, fetch
-    # the required parameters
-    email_params = None
-    language = None
-    if send_email:
-        email_params = get_email_params(course, True, secure=True)
-
-        # Try to find out what language to send the email in.
-        user = None
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            pass
-        else:
-            language = get_user_email_language(user)
-
-    # Enroll the email
-    enroll_email(course_id,
-                 email,
-                 auto_enroll=True,
-                 email_students=send_email,
-                 email_params=email_params,
-                 language=language)

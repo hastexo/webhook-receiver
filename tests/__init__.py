@@ -2,10 +2,9 @@
 import json
 import os
 
-from django.test import TestCase
+from django.conf import settings
 
-from opaque_keys.edx.keys import CourseKey
-from opaque_keys.edx.locator import BlockUsageLocator
+from django.test import TestCase
 
 try:
     from unittest.mock import Mock
@@ -24,31 +23,16 @@ class ShopifyTestCase(TestCase):
         self.json_payload = json.loads(self.raw_payload)
 
     def setup_course(self):
-        # Set up a mock course
+        # TODO: Set up a mock course
         course_id_string = 'course-v1:org+course+run1'
-        ck = CourseKey.from_string(course_id_string)
-        bul = BlockUsageLocator(ck, u'course', u'course')
         course = Mock()
-        course.id = ck
-        course.system = Mock()
-        course.scope_ids = Mock()
-        course.scope_id.user_id = None
-        course.scope_ids.block_type = u'course'
-        course.scope_ids.def_id = bul
-        course.scope_ids.usage_id = bul
-        course.location = bul
-        course.display_name = u'Course - Run 1'
+        course.id = course_id_string
 
-        self.course_id_string = course_id_string
-        self.ck = ck
-        self.course = course
+    def setup_requests(self):
+        self.token_uri = '%s/oauth2/access_token' % settings.SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT  # noqa: E501
+        self.enroll_uri = '%s/api/bulk_enroll/v1/bulk_enroll/' % settings.SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT  # noqa: E501
 
-        email_params = {'registration_url': u'https://localhost:8000/register',  # noqa: E501
-                        'course_about_url': u'https://localhost:8000/courses/course-v1:org+course+run1/about',  # noqa: E501
-                        'site_name': 'localhost:8000',
-                        'course': self.course,
-                        'is_shib_course': None,
-                        'display_name': u'Course - Run 1',
-                        'auto_enroll': True,
-                        'course_url': u'https://localhost:8000/courses/course-v1:org+course+run1/'}  # noqa: E501
-        self.email_params = email_params
+        self.token_response = {
+            'access_token': 'foobar',
+            'expires_in': 3600
+        }

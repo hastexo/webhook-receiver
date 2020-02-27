@@ -2,18 +2,14 @@ sudo: false
 
 dist: xenial
 
-addons:
-  apt:
-    packages:
-      - libgeos-c1v5
-
 language: python
 
 python:
   - "2.7"
-
-services:
-  - mongodb
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 
 before_install:
   - pip install codecov

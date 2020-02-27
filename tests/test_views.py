@@ -6,15 +6,7 @@ import hmac
 from django.conf import settings
 from django.test import Client
 
-# We need this in order to mock.patch get_course_by_id
-from edx_shopify import utils
-
 from . import ShopifyTestCase
-
-try:
-    from unittest.mock import Mock, patch
-except ImportError:
-    from mock import Mock, patch
 
 
 class TestOrderCreation(ShopifyTestCase):
@@ -84,19 +76,3 @@ class TestOrderCreation(ShopifyTestCase):
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
                                     HTTP_X_SHOPIFY_SHOP_DOMAIN='nonexistant-domain.com')  # noqa: E501
         self.assertEqual(response.status_code, 403)
-
-    def test_valid_order(self):
-        response = self.client.post('/shopify/order/create',
-                                    self.raw_payload,
-                                    content_type='application/json',
-                                    HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
-                                    HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com')
-
-        mock_get_course_by_id = Mock(return_value=self.course)
-        mock_get_email_params = Mock(return_value=self.email_params)
-        mock_enroll_email = Mock()
-        with patch.multiple(utils,
-                            get_course_by_id=mock_get_course_by_id,
-                            get_email_params=mock_get_email_params,
-                            enroll_email=mock_enroll_email):
-            self.assertEqual(response.status_code, 200)

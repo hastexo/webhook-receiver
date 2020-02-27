@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
 
-from django.http import Http404
+from requests.exceptions import HTTPError
 
 from edx_shopify.models import Order
 from edx_shopify.tasks import process
 from edx_shopify.utils import record_order
+
+import requests_mock
 
 from . import ShopifyTestCase
 
@@ -14,6 +16,7 @@ class ProcessOrderTest(ShopifyTestCase):
 
     def setUp(self):
         self.setup_payload()
+        self.setup_requests()
 
     def test_invalid_sku(self):
         fixup_payload = self.raw_payload.replace("course-v1:org+course+run1",
@@ -22,9 +25,16 @@ class ProcessOrderTest(ShopifyTestCase):
         order, created = record_order(fixup_json_payload)
 
         result = None
-        with self.assertRaises(Http404):
-            result = process.delay(fixup_json_payload)
-            result.get(5)
+        with requests_mock.Mocker() as m:
+            m.register_uri('POST',
+                           self.token_uri,
+                           json=self.token_response)
+            m.register_uri('POST',
+                           self.enroll_uri,
+                           status_code=400)
+            with self.assertRaises(HTTPError):
+                result = process.delay(fixup_json_payload)
+                result.get(5)
 
         self.assertEqual(result.state, 'FAILURE')
 

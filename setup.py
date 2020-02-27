@@ -8,10 +8,11 @@ from setuptools import find_packages, setup
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='edx-shopify',
-    version='0.0.2',
-    description='edX Shopify: integrates Open edX with Shopify',
-    url='https://github.com/hastexo/edx-shopify',
+    name='edx-webhooks',
+    use_scm_version=True,
+    version='0.0.1',
+    description='edX Webhooks: a webhook processor interfacing with Open edX',
+    url='https://github.com/hastexo/edx-webhooks',
     author='hastexo',
     author_email='pypi@hastexo.com',
     license='AGPL-3.0',
@@ -27,5 +28,14 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[],
+    install_requires=[
+        'celery>=3.1.25',
+        'django>=1.11.21',
+        'django-celery>=3.2.1',
+        'edx-rest-api-client>=1.9.2',
+        'edx-auth-backends>=2.0.2',
+    ],
+    setup_requires=[
+        'setuptools-scm',
+    ],
 )
