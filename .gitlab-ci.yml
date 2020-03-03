@@ -1,0 +1,61 @@
+stages:
+  - build
+  - report
+
+py27:
+  image: python:2.7
+  stage: build
+  script:
+    - pip install tox
+    - tox -e py27-ironwood,flake8,report
+  artifacts:
+    paths:
+      - .coverage*
+    expire_in: 5 minutes
+
+py35:
+  image: python:3.5
+  stage: build
+  script:
+    - pip install tox
+    - tox -e py35-latest,flake8,report
+  artifacts:
+    paths:
+      - .coverage*
+    expire_in: 5 minutes
+
+py36:
+  image: python:3.6
+  stage: build
+  script:
+    - pip install tox
+    - tox -e py36-latest,flake8,report
+  artifacts:
+    paths:
+      - .coverage*
+    expire_in: 5 minutes
+
+py38:
+  image: python:3.8
+  stage: build
+  script:
+    - pip install tox
+    - tox -e py38-latest,flake8,report
+  artifacts:
+    paths:
+      - .coverage*
+    expire_in: 5 minutes
+
+coverage:
+  image: python:3
+  stage: report
+  script:
+    - pip install coverage
+    - python -m coverage combine
+    - python -m coverage html
+    - python -m coverage report
+  coverage: '/TOTAL.*\s+(\d+\.\d+%)$/'
+  artifacts:
+    paths:
+      - htmlcov
+    expire_in: 1 week
