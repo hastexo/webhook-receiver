@@ -1,6 +1,5 @@
 mock
 coverage
-django-nose
 django-webtest
 requests-mock
 tox

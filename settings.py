@@ -25,14 +25,11 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django_nose',
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'djcelery',
     'edx_shopify',
 ]
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 CELERY_ALWAYS_EAGER = True
 
