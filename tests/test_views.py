@@ -8,6 +8,8 @@ import hmac
 from django.conf import settings
 from django.test import Client
 
+import requests_mock
+
 from . import ShopifyTestCase
 
 
@@ -15,6 +17,7 @@ class TestOrderCreation(ShopifyTestCase):
 
     def setUp(self):
         self.setup_payload()
+        self.setup_requests()
 
         # Set enforce_csrf_checks=True here because testing must still
         # work (webhooks are explicitly exempted from CSRF protection)
@@ -78,3 +81,46 @@ class TestOrderCreation(ShopifyTestCase):
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
                                     HTTP_X_SHOPIFY_SHOP_DOMAIN='nonexistant-domain.com')  # noqa: E501
         self.assertEqual(response.status_code, 403)
+
+    def test_valid_order(self):
+        enrollment_response = {
+            'action': 'enroll',
+            'courses': {
+                'course-v1:org+course+run1': {
+                    'action': 'enroll',
+                    'results': [
+                        {
+                            'identifier': 'learner@example.com',
+                            'after': {
+                                'enrollment': False,
+                                'allowed': True,
+                                'user': False,
+                                'auto_enroll': True
+                            },
+                            'before': {
+                                'enrollment': False,
+                                'allowed': False,
+                                'user': False,
+                                'auto_enroll': False
+                            }
+                        }
+                    ],
+                    'auto_enroll': True}
+            },
+            'email_students': True,
+            'auto_enroll': True
+        }
+
+        with requests_mock.Mocker() as m:
+            m.register_uri('POST',
+                           self.token_uri,
+                           json=self.token_response)
+            m.register_uri('POST',
+                           self.enroll_uri,
+                           json=enrollment_response)
+            response = self.client.post('/shopify/order/create',
+                                        self.raw_payload,
+                                        content_type='application/json',
+                                        HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
+                                        HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com')  # noqa: E501
+            self.assertEqual(response.status_code, 200)
