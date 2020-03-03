@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 import django.utils.timezone
 
 
@@ -29,7 +30,7 @@ class Migration(migrations.Migration):
                 ('sku', models.CharField(max_length=254)),
                 ('email', models.EmailField(max_length=254)),
                 ('status', models.IntegerField(default=0, choices=[(0, b'Unprocessed'), (1, b'Processed'), (2, b'Error')])),
-                ('order', models.ForeignKey(to='edx_shopify.Order')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='edx_shopify.Order')),
             ],
         ),
     ]

@@ -42,7 +42,10 @@ class OrderItem(models.Model):
         (ERROR, 'Error'),
     )
 
-    order = models.ForeignKey(Order)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.PROTECT
+    )
     sku = models.CharField(max_length=254)
     email = models.EmailField()
     status = models.IntegerField(choices=STATUS_CHOICES, default=UNPROCESSED)
