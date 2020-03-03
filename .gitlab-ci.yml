@@ -7,7 +7,7 @@ py27:
   stage: build
   script:
     - pip install tox
-    - tox -e py27-ironwood,flake8,report
+    - tox -e py27-ironwood,flake8
   artifacts:
     paths:
       - .coverage*
@@ -18,7 +18,7 @@ py35:
   stage: build
   script:
     - pip install tox
-    - tox -e py35-latest,flake8,report
+    - tox -e py35-latest,flake8
   artifacts:
     paths:
       - .coverage*
@@ -29,7 +29,7 @@ py36:
   stage: build
   script:
     - pip install tox
-    - tox -e py36-latest,flake8,report
+    - tox -e py36-latest,flake8
   artifacts:
     paths:
       - .coverage*
@@ -40,7 +40,7 @@ py38:
   stage: build
   script:
     - pip install tox
-    - tox -e py38-latest,flake8,report
+    - tox -e py38-latest,flake8
   artifacts:
     paths:
       - .coverage*
