@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import json
 
 from django.conf import settings
@@ -20,7 +22,7 @@ def order_create(request):
     try:
         hmac = request.META['HTTP_X_SHOPIFY_HMAC_SHA256']
         shop_domain = request.META['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
     except (KeyError, ValueError):
         return HttpResponse(status=400)
 

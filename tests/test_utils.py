@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import json
 
 from django.test import TestCase
@@ -19,15 +21,27 @@ class SignatureVerificationTest(TestCase):
 
     def test_hmac_is_valid(self):
         correct_hmac = [
-            ('hello', 'world', '8ayXAutfryPKKRpNxG3t3u4qeMza8KQSvtdxTP/7HMQ='),
-            ('bye', 'bye', 'HHfaL+C4HxPTexmlKO9pwEHuAXkErAz85APGPOgvBVU='),
-            ('foo', 'bar', '+TILrwJJFp5zhQzWFW3tAQbiu2rYyrAbe7vr5tEGUxc=')
+            ('hello',
+             'world'.encode('utf-8'),
+             '8ayXAutfryPKKRpNxG3t3u4qeMza8KQSvtdxTP/7HMQ='),
+            ('bye',
+             'bye'.encode('utf-8'),
+             'HHfaL+C4HxPTexmlKO9pwEHuAXkErAz85APGPOgvBVU='),
+            ('foo',
+             'bar'.encode('utf-8'),
+             '+TILrwJJFp5zhQzWFW3tAQbiu2rYyrAbe7vr5tEGUxc=')
         ]
 
         incorrect_hmac = [
-            ('hello', 'world', '+TILrwJJFp5zhQzWFW3tAQbiu2rYyrAbe7vr5tEGUxc='),
-            ('bye', 'bye', '8ayXAutfryPKKRpNxG3t3u4qeMza8KQSvtdxTP/7HMQ='),
-            ('foo', 'bar', 'HHfaL+C4HxPTexmlKO9pwEHuAXkErAz85APGPOgvBVU=')
+            ('hello',
+             'world'.encode('utf-8'),
+             '+TILrwJJFp5zhQzWFW3tAQbiu2rYyrAbe7vr5tEGUxc='),
+            ('bye',
+             'bye'.encode('utf-8'),
+             '8ayXAutfryPKKRpNxG3t3u4qeMza8KQSvtdxTP/7HMQ='),
+            ('foo',
+             'bar'.encode('utf-8'),
+             'HHfaL+C4HxPTexmlKO9pwEHuAXkErAz85APGPOgvBVU=')
         ]
 
         for triplet in correct_hmac:
@@ -105,10 +119,8 @@ class ProcessOrderTest(ShopifyTestCase):
         self.assertEqual(order.status, Order.PROCESSED)
 
     def test_invalid_sku(self):
-        # Make sure the order gets created, and that its ID matches
-        # that in the payload
-        fixup_payload = self.raw_payload.replace("course-v1:org+course+run1",
-                                                 "course-v1:org+nosuchcourse+run1")  # noqa: E501
+        fixup_payload = self.raw_payload.decode('utf-8').replace("course-v1:org+course+run1",  # noqa: E501
+                                                                 "course-v1:org+nosuchcourse+run1")  # noqa: E501
         fixup_json_payload = json.loads(fixup_payload)
         order, created = record_order(fixup_json_payload)
 

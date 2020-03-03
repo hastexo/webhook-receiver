@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import hashlib
 import base64
 import hmac
@@ -24,15 +26,15 @@ class TestOrderCreation(ShopifyTestCase):
         # webhook handler must verify and accept or reject: a correct
         # hash, a hash from the wrong (reversed) key, and a corrupted
         # hash containing an invalid base64 character.
-        correct_hash = hmac.new(conf['api_key'],
+        correct_hash = hmac.new(conf['api_key'].encode('utf-8'),
                                 self.raw_payload,
-                                hashlib.sha256)
-        incorrect_hash = hmac.new(conf['api_key'][::-1],
+                                hashlib.sha256).digest()
+        incorrect_hash = hmac.new(conf['api_key'][::-1].encode('utf-8'),
                                   self.raw_payload,
-                                  hashlib.sha256)
-        self.correct_signature = base64.b64encode(correct_hash.digest())
-        self.incorrect_signature = base64.b64encode(incorrect_hash.digest())
-        self.corrupt_signature = "-%s" % base64.b64encode(correct_hash.digest())[1:]  # noqa: E501
+                                  hashlib.sha256).digest()
+        self.correct_signature = base64.b64encode(correct_hash).decode()
+        self.incorrect_signature = base64.b64encode(incorrect_hash).decode()
+        self.corrupt_signature = "-%s" % base64.b64encode(correct_hash)[1:].decode()  # noqa: E501
 
         # Set up a mock course
         self.setup_course()

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import json
 import os
 
@@ -19,8 +21,8 @@ class ShopifyTestCase(TestCase):
         # methods as a raw string and as a JSON dictionary.
         payload_file = os.path.join(os.path.dirname(__file__),
                                     'post.json')
-        self.raw_payload = open(payload_file, 'r').read()
-        self.json_payload = json.loads(self.raw_payload)
+        self.raw_payload = open(payload_file, 'rb').read()
+        self.json_payload = json.load(open(payload_file, 'r'))
 
     def setup_course(self):
         # TODO: Set up a mock course

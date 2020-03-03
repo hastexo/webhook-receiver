@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import hashlib
 import base64
 import hmac
@@ -8,10 +10,15 @@ from edx_webhooks.utils import enroll_in_course
 from .models import Order, OrderItem
 
 
-def hmac_is_valid(key, msg, hmac_to_verify):
-    hash = hmac.new(str(key), str(msg), hashlib.sha256)
-    hmac_calculated = base64.b64encode(hash.digest())
-    return hmac.compare_digest(hmac_calculated, hmac_to_verify)
+def get_hmac(key, body):
+    digest = hmac.new(key.encode('utf-8'),
+                      body,
+                      hashlib.sha256).digest()
+    return base64.b64encode(digest).decode()
+
+
+def hmac_is_valid(key, body, hmac_to_verify):
+    return get_hmac(key, body) == hmac_to_verify
 
 
 def record_order(data):

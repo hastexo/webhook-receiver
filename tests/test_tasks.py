@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import json
 
 from requests.exceptions import HTTPError
@@ -19,8 +21,8 @@ class ProcessOrderTest(ShopifyTestCase):
         self.setup_requests()
 
     def test_invalid_sku(self):
-        fixup_payload = self.raw_payload.replace("course-v1:org+course+run1",
-                                                 "course-v1:org+nosuchcourse+run1")  # noqa: E501
+        fixup_payload = self.raw_payload.decode('utf-8').replace("course-v1:org+course+run1",  # noqa: E501
+                                                                 "course-v1:org+nosuchcourse+run1")  # noqa: E501
         fixup_json_payload = json.loads(fixup_payload)
         order, created = record_order(fixup_json_payload)
 
