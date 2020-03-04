@@ -1,0 +1,6 @@
+celery
+django
+django-celery
+anyjson
+edx-rest-api-client
+edx-auth-backends
