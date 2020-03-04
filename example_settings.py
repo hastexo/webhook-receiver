@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 from __future__ import unicode_literals
+import os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'foobar'
@@ -25,13 +28,35 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.contenttypes',
+    'django.contrib.admin',
     'django.contrib.auth',
     'djcelery',
+    'django.contrib.contenttypes',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
     'edx_shopify',
 ]
 
 CELERY_ALWAYS_EAGER = True
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ]
+        }
+    },
+]
 
 DATABASES = {
     'default': {
@@ -47,6 +72,9 @@ CACHES = {
 }
 
 ROOT_URLCONF = 'edx_shopify.urls'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = '/static/'
 
 SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = 'http://localhost:18000'
 SOCIAL_AUTH_EDX_OAUTH2_KEY = 'key'
