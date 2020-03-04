@@ -1,6 +1,6 @@
-celery==3.1.25
-django==1.11.21
+celery<3.2
+django<1.12
 git+https://github.com/edx/django-celery.git@756cb57aad765cb2b0d37372c1855b8f5f37e6b0#egg=django-celery==3.2.1+edx.2
-anyjson==0.3.3
-edx-rest-api-client==1.9.2
-edx-auth-backends==2.0.2
+anyjson<0.4
+edx-rest-api-client<2.0
+edx-auth-backends<2.1
