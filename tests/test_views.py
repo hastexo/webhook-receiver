@@ -149,3 +149,4 @@ class TestOrderCreation(ShopifyTestCase):
         idempotency of order processing."""
 
         self.test_valid_order()
+        self.test_valid_order()

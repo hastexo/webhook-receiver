@@ -46,3 +46,51 @@ class ProcessOrderTest(ShopifyTestCase):
         # learn of the update until we refresh from the database.
         order.refresh_from_db()
         self.assertEqual(order.status, Order.ERROR)
+
+    def test_valid_order(self):
+        order, created = record_order(self.json_payload)
+
+        result = None
+
+        enrollment_response = {
+            'action': 'enroll',
+            'courses': {
+                'course-v1:org+course+run1': {
+                    'action': 'enroll',
+                    'results': [
+                        {
+                            'identifier': 'learner@example.com',
+                            'after': {
+                                'enrollment': False,
+                                'allowed': True,
+                                'user': False,
+                                'auto_enroll': True
+                            },
+                            'before': {
+                                'enrollment': False,
+                                'allowed': False,
+                                'user': False,
+                                'auto_enroll': False
+                            }
+                        }
+                    ],
+                    'auto_enroll': True}
+            },
+            'email_students': True,
+            'auto_enroll': True
+        }
+
+        with requests_mock.Mocker() as m:
+            m.register_uri('POST',
+                           self.token_uri,
+                           json=self.token_response)
+            m.register_uri('POST',
+                           self.enroll_uri,
+                           json=enrollment_response)
+            result = process.delay(self.json_payload)
+            result.get(5)
+
+        self.assertEqual(result.state, 'SUCCESS')
+
+        order.refresh_from_db()
+        self.assertEqual(order.status, Order.PROCESSED)

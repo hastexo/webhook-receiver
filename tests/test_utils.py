@@ -139,6 +139,12 @@ class ProcessOrderTest(ShopifyTestCase):
         # task failure handler's job to set the status to ERROR
         self.assertEqual(order.status, Order.PROCESSING)
 
+    def test_valid_order_again(self):
+        """Re-inject a previously processed order, so we can check
+        idempotency of order processing."""
+        self.test_valid_order()
+        self.test_valid_order()
+
 
 class ProcessLineItemTest(ShopifyTestCase):
 
