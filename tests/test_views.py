@@ -52,9 +52,17 @@ class TestOrderCreation(ShopifyTestCase):
         response = self.client.get('/shopify/order/create')
         self.assertEqual(response.status_code, 405)
 
-    def test_missing_headers(self):
+    def test_missing_hmac_header(self):
         response = self.client.post('/shopify/order/create',
                                     self.raw_payload,
+                                    HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com',
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_missing_shop_domain_header(self):
+        response = self.client.post('/shopify/order/create',
+                                    self.raw_payload,
+                                    HTTP_X_SHOPIFY_HMAC_SHA256=self.corrupt_signature,  # noqa: E501
                                     content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
@@ -73,6 +81,17 @@ class TestOrderCreation(ShopifyTestCase):
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.corrupt_signature,  # noqa: E501
                                     HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com')
         self.assertEqual(response.status_code, 403)
+
+    def test_corrupt_data(self):
+        # Invalid JSON
+        corrupt_payload = "{".encode('utf-8')
+
+        response = self.client.post('/shopify/order/create',
+                                    corrupt_payload,
+                                    content_type='application/json',
+                                    HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
+                                    HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com')
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_domain(self):
         response = self.client.post('/shopify/order/create',
@@ -124,3 +143,9 @@ class TestOrderCreation(ShopifyTestCase):
                                         HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
                                         HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com')  # noqa: E501
             self.assertEqual(response.status_code, 200)
+
+    def test_valid_order_again(self):
+        """Re-inject a previously processed order, so we can check
+        idempotency of order processing."""
+
+        self.test_valid_order()
