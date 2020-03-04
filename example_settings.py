@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 from __future__ import unicode_literals
+import logging
 import os
 
 # Quick-start development settings - unsuitable for production
@@ -23,6 +24,9 @@ SECRET_KEY = 'foobar'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if DEBUG:
+    logging.basicConfig(level=logging.DEBUG)
 
 ALLOWED_HOSTS = []
 
