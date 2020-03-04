@@ -1,5 +1,3 @@
-*.pyc
-*.egg-info
-.pypirc
 .tox/
 .coverage
+edx_webhooks.sqlite3
