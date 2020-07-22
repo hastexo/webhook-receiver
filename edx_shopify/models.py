@@ -1,46 +1,67 @@
 from django.db import models
 from django.utils import timezone
 
+from django_fsm import FSMIntegerField, ConcurrentTransitionMixin, transition
+
+from . import STATE
+
+import logging
+
+
 APP_LABEL = 'edx_shopify'
 
+logger = logging.getLogger(__name__)
 
-class Order(models.Model):
+
+class Order(ConcurrentTransitionMixin, models.Model):
     class Meta:
         app_label = APP_LABEL
 
-    UNPROCESSED = 0
-    PROCESSING = 1
-    PROCESSED = 2
-    ERROR = 3
+    NEW = STATE.NEW
+    PROCESSING = STATE.PROCESSING
+    PROCESSED = STATE.PROCESSED
+    ERROR = STATE.ERROR
 
-    STATUS_CHOICES = (
-        (UNPROCESSED, 'Unprocessed'),
-        (PROCESSING, 'Processing'),
-        (PROCESSED, 'Processed'),
-        (ERROR, 'Error'),
-    )
+    CHOICES = STATE.CHOICES
 
     id = models.BigIntegerField(primary_key=True, editable=False)
     email = models.EmailField()
     first_name = models.CharField(max_length=254)
     last_name = models.CharField(max_length=254)
     received = models.DateTimeField(default=timezone.now)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=UNPROCESSED)
+    status = FSMIntegerField(choices=CHOICES, default=NEW)
+
+    @transition(field=status,
+                source=NEW,
+                target=PROCESSING,
+                on_error=ERROR)
+    def start_processing(self):
+        logger.debug('Processing order %s' % self.id)
+
+    @transition(field=status,
+                source=PROCESSING,
+                target=PROCESSED,
+                on_error=ERROR)
+    def finish_processing(self):
+        logger.debug('Finishing order %s' % self.id)
+
+    @transition(field=status,
+                source=PROCESSING,
+                target=ERROR)
+    def fail(self):
+        logger.debug('Failed to process order %s' % self.id)
 
 
-class OrderItem(models.Model):
+class OrderItem(ConcurrentTransitionMixin, models.Model):
     class Meta:
         app_label = APP_LABEL
 
-    UNPROCESSED = 0
-    PROCESSED = 1
-    ERROR = 2
+    NEW = STATE.NEW
+    PROCESSING = STATE.PROCESSING
+    PROCESSED = STATE.PROCESSED
+    ERROR = STATE.ERROR
 
-    STATUS_CHOICES = (
-        (UNPROCESSED, 'Unprocessed'),
-        (PROCESSED, 'Processed'),
-        (ERROR, 'Error'),
-    )
+    CHOICES = STATE.CHOICES
 
     order = models.ForeignKey(
         Order,
@@ -48,6 +69,30 @@ class OrderItem(models.Model):
     )
     sku = models.CharField(max_length=254)
     email = models.EmailField()
-    status = models.IntegerField(choices=STATUS_CHOICES, default=UNPROCESSED)
+    status = FSMIntegerField(choices=CHOICES, default=NEW)
 
     unique_together = ('order', 'sku', 'email')
+
+    @transition(field=status,
+                source=NEW,
+                target=PROCESSING,
+                on_error=ERROR)
+    def start_processing(self):
+        logger.debug('Processing item %s for order %s' % (self.id,
+                                                          self.order.id))
+
+    @transition(field=status,
+                source=PROCESSING,
+                target=PROCESSED,
+                on_error=ERROR)
+    def finish_processing(self):
+        logger.debug('Finishing item %s for order %s' % (self.id,
+                                                         self.order.id))
+
+    @transition(field=status,
+                source=PROCESSING,
+                target=ERROR)
+    def fail(self):
+        logger.debug('Failed to process item %s '
+                     'for order %s' % (self.id,
+                                       self.order.id))

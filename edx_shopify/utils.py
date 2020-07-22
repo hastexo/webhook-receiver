@@ -5,6 +5,8 @@ import base64
 import hmac
 import logging
 
+from django.db import transaction
+
 from edx_webhooks.utils import enroll_in_course
 
 from .models import Order, OrderItem
@@ -36,15 +38,17 @@ def process_order(order, data, send_email=False, logger=None):
     if not logger:
         logger = logging
 
-    # If the order is anything but UNPROCESSED, abandon the attempt.
-    if order.status != Order.UNPROCESSED:
+    if order.status != Order.NEW:
         logger.warning('Order %s has already '
                        'been processed, ignoring' % order.id)
         return
 
-    # Mark the order as being processed.
-    order.status = Order.PROCESSING
-    order.save()
+    # Start processing the order. A concurrent attempt to access the
+    # same order will result in django_fsm.ConcurrentTransition on
+    # save(), causing a rollback.
+    order.start_processing()
+    with transaction.atomic():
+        order.save()
 
     # Process line items
     for item in data['line_items']:
@@ -53,8 +57,9 @@ def process_order(order, data, send_email=False, logger=None):
                      '%s for order %s' % (item, order.id))
 
     # Mark the order status
-    order.status = Order.PROCESSED
-    order.save()
+    order.finish_processing()
+    with transaction.atomic():
+        order.save()
 
     return order
 
@@ -81,12 +86,16 @@ def process_line_item(order, item):
         email=email
     )
 
+    order_item.start_processing()
+    with transaction.atomic():
+        order_item.save()
+
     # Create an enrollment for the line item
-    if order_item.status == OrderItem.UNPROCESSED:
-        enroll_in_course(sku, email)
+    enroll_in_course(sku, email)
 
     # Mark the item as processed
-    order_item.status = OrderItem.PROCESSED
-    order_item.save()
+    order_item.finish_processing()
+    with transaction.atomic():
+        order_item.save()
 
     return order_item

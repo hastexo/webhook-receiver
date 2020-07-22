@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -7,6 +8,8 @@ import warnings
 from django.test import TestCase
 from django.db import connection
 from django.db import DatabaseError, IntegrityError
+
+from django_fsm import TransitionNotAllowed
 
 from edx_shopify.models import Order, OrderItem
 
@@ -26,7 +29,7 @@ class TestOrder(TestCase):
 
     def test_default_status(self):
         # Does the order get a default status on creation?
-        self.assertEqual(self.order.status, self.model.UNPROCESSED)
+        self.assertEqual(self.order.status, self.model.NEW)
 
     def test_default_received(self):
         # Does the order get a default received date on creation?
@@ -35,6 +38,31 @@ class TestOrder(TestCase):
     def test_save(self):
         # Can we save the order?
         self.order.save()
+
+    def test_start_processing(self):
+        # Can we start processing the order, and does this result in
+        # the correct state?
+        self.order.start_processing()
+        self.assertEqual(self.order.status, self.model.PROCESSING)
+
+    def test_finish_processing(self):
+        # Can we finish processing the order, and does this result in
+        # the correct state?
+        self.order.start_processing()
+        self.order.finish_processing()
+        self.assertEqual(self.order.status, self.model.PROCESSED)
+
+    def test_fail(self):
+        # Can we fail an order, and does this result in the correct
+        # state?
+        self.order.start_processing()
+        self.order.fail()
+        self.assertEqual(self.order.status, self.model.ERROR)
+
+    def test_incorrect_transition(self):
+        # Do we fail on a state transition that the FSM disallows?
+        with self.assertRaises(TransitionNotAllowed):
+            self.order.finish_processing()
 
 
 class TestOrderItem(TestCase):
@@ -63,7 +91,7 @@ class TestOrderItem(TestCase):
     def test_default_status(self):
         # Does the order get a default status on creation?
         self.assertEqual(self.order_item.status,
-                         self.model.UNPROCESSED)
+                         self.model.NEW)
 
     def test_empty_order_reference(self):
         # Does removing the parent order from an order item raise an
@@ -110,3 +138,28 @@ class TestOrderItem(TestCase):
         else:
             with self.assertRaises(DatabaseError):
                 second_order_item.save()
+
+    def test_start_processing(self):
+        # Can we start processing the order item, and does this result
+        # in the correct state?
+        self.order_item.start_processing()
+        self.assertEqual(self.order_item.status, self.model.PROCESSING)
+
+    def test_finish_processing(self):
+        # Can we finish processing the order item, and does this
+        # result in the correct state?
+        self.order_item.start_processing()
+        self.order_item.finish_processing()
+        self.assertEqual(self.order_item.status, self.model.PROCESSED)
+
+    def test_fail(self):
+        # Can we fail an order, and does this result in the correct
+        # state?
+        self.order_item.start_processing()
+        self.order_item.fail()
+        self.assertEqual(self.order_item.status, self.model.ERROR)
+
+    def test_incorrect_transition(self):
+        # Do we fail on a state transition that the FSM disallows?
+        with self.assertRaises(TransitionNotAllowed):
+            self.order_item.finish_processing()

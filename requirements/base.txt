@@ -1,2 +1,2 @@
-# Open edX
-edx-rest-api-client>=1.9.2
+# Django FSM
+django-fsm

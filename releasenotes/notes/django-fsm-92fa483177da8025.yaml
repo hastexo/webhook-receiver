@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The edx_shopify app now uses a proper Finite State Machine (FSM)
+    for processing orders and order items, through django_fsm.

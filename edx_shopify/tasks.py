@@ -2,6 +2,8 @@ from celery import Task
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
+from django.db import transaction
+
 from .models import Order
 from .utils import process_order
 
@@ -37,8 +39,9 @@ class OrderTask(Task):
                      'process order %s '
                      '(task ID %s)' % (self.order.id,
                                        task_id))
-        self.order.status = Order.ERROR
-        self.order.save()
+        self.order.fail()
+        with transaction.atomic():
+            self.order.save()
 
 
 @shared_task(bind=True,

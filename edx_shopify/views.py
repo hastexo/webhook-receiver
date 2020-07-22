@@ -65,7 +65,7 @@ def order_create(request):
         pass
 
     # Process order
-    if order.status == Order.UNPROCESSED:
+    if order.status == Order.NEW:
         logger.info('Scheduling order %s for processing' % order.id)
         process.delay(data, send_email)
     else:
