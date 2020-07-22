@@ -24,17 +24,6 @@ py35:
       - .coverage*
     expire_in: 5 minutes
 
-py36:
-  image: python:3.6
-  stage: build
-  script:
-    - pip install tox
-    - tox -e py36-juniper,py36-latest,flake8
-  artifacts:
-    paths:
-      - .coverage*
-    expire_in: 5 minutes
-
 py38:
   image: python:3.8
   stage: build
