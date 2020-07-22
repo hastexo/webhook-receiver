@@ -36,7 +36,7 @@ def record_order(data):
 
 def process_order(order, data, send_email=False, logger=None):
     if not logger:
-        logger = logging
+        logger = logging.getLogger(__name__)
 
     if order.status != Order.NEW:
         logger.warning('Order %s has already '

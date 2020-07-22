@@ -6,6 +6,8 @@ from edx_rest_api_client.client import OAuthAPIClient
 
 EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll/'
 
+logger = logging.getLogger(__name__)
+
 
 def enroll_in_course(course_id,
                      email,
@@ -40,9 +42,9 @@ def enroll_in_course(course_id,
         "identifiers": email,
     }
 
-    logging.debug("Sending POST request "
-                  "to %s with parameters %s" % (bulk_enroll_url,
-                                                request_params))
+    logger.debug("Sending POST request "
+                 "to %s with parameters %s" % (bulk_enroll_url,
+                                               request_params))
     response = client.post(
         bulk_enroll_url,
         request_params
@@ -54,5 +56,5 @@ def enroll_in_course(course_id,
     response.raise_for_status()
 
     # If all is well, log the response at the debug level.
-    logging.debug("Received response from %s: %s " % (bulk_enroll_url,
-                                                      response.json()))
+    logger.debug("Received response from %s: %s " % (bulk_enroll_url,
+                                                     response.json()))
