@@ -18,7 +18,7 @@ py35:
   stage: build
   script:
     - pip install tox
-    - tox -e py35-latest,flake8
+    - tox -e py35-juniper,py35-latest,flake8
   artifacts:
     paths:
       - .coverage*
@@ -29,7 +29,7 @@ py36:
   stage: build
   script:
     - pip install tox
-    - tox -e py36-latest,flake8
+    - tox -e py36-juniper,py36-latest,flake8
   artifacts:
     paths:
       - .coverage*
@@ -40,7 +40,7 @@ py38:
   stage: build
   script:
     - pip install tox
-    - tox -e py38-latest,flake8
+    - tox -e py38-juniper,py38-latest,flake8
   artifacts:
     paths:
       - .coverage*

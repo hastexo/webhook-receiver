@@ -1,0 +1,6 @@
+celery<3.2
+django<2.3
+django-celery<3.4
+anyjson<0.4
+edx-rest-api-client<5.3
+edx-auth-backends<3.2
