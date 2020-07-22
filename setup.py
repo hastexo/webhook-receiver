@@ -10,7 +10,6 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='edx-webhooks',
     use_scm_version=True,
-    version='0.0.1',
     description='edX Webhooks: a webhook processor interfacing with Open edX',
     url='https://github.com/hastexo/edx-webhooks',
     author='hastexo',
