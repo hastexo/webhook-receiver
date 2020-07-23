@@ -11,6 +11,8 @@ setup(
     name='edx-webhooks',
     use_scm_version=True,
     description='edX Webhooks: a webhook processor interfacing with Open edX',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     url='https://github.com/hastexo/edx-webhooks',
     author='hastexo',
     author_email='pypi@hastexo.com',

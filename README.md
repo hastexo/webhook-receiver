@@ -7,8 +7,7 @@
 # edX Webhooks
 
 This is a Django app that listens for incoming webhooks, and then
-translates those into REST API calls against the Open edX Bulk
-Enrollment API.
+translates those into calls against the Open edX REST APIs.
 
 It currently provides the following endpoints:
 
@@ -16,8 +15,9 @@ It currently provides the following endpoints:
   data, as it would be received by a Shopify webhook firing.  When the
   webhook is configured properly on Shopify (see "Shopify
   configuration" below), students will be enrolled on the appropriate
-  courses as soon as an order is created. This is intended as a
-  replacement of [Open edX
+  courses as soon as an order is created. This requires that your Open
+  edX installation enables the Bulk Enrollment View, and is intended
+  as a replacement for [Open edX
   E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/),
   for organizations that already use Shopify as a selling platform.
 
@@ -27,7 +27,7 @@ It currently provides the following endpoints:
 
 * You must enable the Bulk Enrollment view. This view is disabled in a
   default Open edX configuration. To enable it, add
-  `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.env.json`, and
+  `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.yml`, and
   restart `edxapp`.
 
 * The Bulk Enrollment view also requires that you set
@@ -82,7 +82,7 @@ To deploy `edx-webhooks` as part of your Django application:
 1. Install it via pip (into a virtualenv, most probably):
 
     ```
-    $ pip app install edx-webhooks
+    $ pip install edx-webhooks
     ```
 
 2. Add it to the `INSTALLED_APPS` list in `settings.py`, and also add
@@ -90,14 +90,14 @@ To deploy `edx-webhooks` as part of your Django application:
 
     ```python
     INSTALLED_APPS = [
-	    'social_django',
+        'social_django',
         'edx_shopify',
     ],
-	AUTHENTICATION_BACKENDS = (
+    AUTHENTICATION_BACKENDS = (
         'auth_backends.backends.EdXOAuth2',
         'django.contrib.auth.backends.ModelBackend',
-	)
-	SOCIAL_AUTH_STRATEGY = 'auth_backends.strategies.EdxDjangoStrategy'
+    )
+    SOCIAL_AUTH_STRATEGY = 'auth_backends.strategies.EdxDjangoStrategy'
     WEBHOOK_SETTINGS = [
         "edx_shopify": {
             "api_key": "YOUR_SHOPIFY_API_KEY",
@@ -106,6 +106,9 @@ To deploy `edx-webhooks` as part of your Django application:
     ],
     ```
 
+You can also configure your application using environment variables
+and/or a `.env` file; an illustrated example of this is in
+`example_settings.py`.
 
 ## Shopify configuration
 
@@ -118,7 +121,7 @@ enrolled on the course run.  You must validate that field with
 JavaScript, so that it is always filled with a valid email address.
 
 Furthermore, you need to make sure that your product SKU is a valid edX course
-ID in your LMS, such as `course-v1:hastexo+hx212+201704`.
+ID in your LMS, following the `course-v1:<org>+<course>+<run>` format.
 
 
 ## License
