@@ -1,0 +1,5 @@
+---
+other:
+  - |
+    This project now uses reno (https://pypi.org/project/reno/) to
+    manage its changelog and release notes.
