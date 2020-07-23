@@ -1,2 +1,2 @@
-# Django FSM
 django-fsm
+django-environ

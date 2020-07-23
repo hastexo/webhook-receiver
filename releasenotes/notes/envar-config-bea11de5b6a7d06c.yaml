@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The apps are now fully configurable using environment variables,
+    using django-environ (https://pypi.org/project/django-environ/).
+    You can either configure applications via actual environment
+    variables that you pass into the process running Django, or else
+    create a file named .env (in the same directory as settings.py)
+    that contains the variables you want to set. This latter
+    functionality is provided by python-dotenv
+    (https://pypi.org/project/python-dotenv/).

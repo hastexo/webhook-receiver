@@ -10,25 +10,53 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 from __future__ import unicode_literals
+import environ
 import logging
 import os
+import random
+import string
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
+from dotenv import load_dotenv
 
+# Populate os.environ with variables from .env (if it exists)
+load_dotenv(verbose=True)
+
+# Now parse the pre-populated environment into django-environ
+env = environ.Env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'foobar'
+SECRET_KEY = env.str('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
-if DEBUG:
-    logging.basicConfig(level=logging.DEBUG)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(levelname)s:%(name)s:%(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG' if DEBUG else env.str('DJANGO_LOG_LEVEL',
+                                               default='WARNING').upper(),
+    },
+}
 
-ALLOWED_HOSTS = []
+# We populate ALLOWED_HOSTS from a comma-separated list. Running with
+# DEBUG = True overrides this, and is equivalent to setting the
+# DJANGO_ALLOWED_HOSTS envar to "localhost,127.0.0.1,[::1]".
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default="")
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,16 +91,12 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'edx_webhooks.sqlite3',
-    }
+    'default': env.db('DJANGO_DATABASE_URL'),
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    }
+    'default': env.cache('DJANGO_CACHE_URL',
+                         default="dummycache://"),
 }
 
 ROOT_URLCONF = 'edx_shopify.urls'
@@ -80,13 +104,18 @@ ROOT_URLCONF = 'edx_shopify.urls'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 
-SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = 'http://localhost:18000'
-SOCIAL_AUTH_EDX_OAUTH2_KEY = 'key'
-SOCIAL_AUTH_EDX_OAUTH2_SECRET = 'secret'
+SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT',
+                                          default='http://localhost:18000')
+SOCIAL_AUTH_EDX_OAUTH2_KEY = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_KEY',
+                                     default='')
+SOCIAL_AUTH_EDX_OAUTH2_SECRET = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_SECRET',
+                                        default='')
 
 WEBHOOK_SETTINGS = {
     'edx_shopify': {
-        'shop_domain': 'example.com',
-        'api_key': 'foobar',
+        'shop_domain': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_SHOP_DOMAIN',
+                               default=''),
+        'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_API_KEY',
+                           default=''),
     }
 }

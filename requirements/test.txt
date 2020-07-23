@@ -3,3 +3,4 @@ coverage
 django-webtest
 requests-mock
 tox
+python-dotenv
