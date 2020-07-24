@@ -31,7 +31,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'celery>=3.1.25',
-        'django>=1.11.21',
+        'django>=2.2',
         'django-celery>=3.2.1',
         'django_fsm',
         'edx-rest-api-client>=1.9.2',
