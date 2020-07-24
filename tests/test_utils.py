@@ -199,8 +199,11 @@ class ProcessLineItemTest(ShopifyTestCase):
 
             order_item = process_line_item(order, line_item)
 
-            # Read back the order item
-            order_item.refresh_from_db()
+            # Read back the order item (can't just use
+            # refresh_from_db(), because of the FSM-protected status
+            # field)
+            order_item = OrderItem.objects.get(pk=order_item.id)
+
             self.assertEqual(order_item.order, order)
             self.assertEqual(order_item.sku, 'course-v1:org+course+run1')
             self.assertEqual(order_item.email, 'learner@example.com')

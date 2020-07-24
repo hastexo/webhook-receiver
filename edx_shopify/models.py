@@ -29,7 +29,9 @@ class Order(ConcurrentTransitionMixin, models.Model):
     first_name = models.CharField(max_length=254)
     last_name = models.CharField(max_length=254)
     received = models.DateTimeField(default=timezone.now)
-    status = FSMIntegerField(choices=CHOICES, default=NEW)
+    status = FSMIntegerField(choices=CHOICES,
+                             default=NEW,
+                             protected=True)
 
     @transition(field=status,
                 source=NEW,
@@ -69,7 +71,9 @@ class OrderItem(ConcurrentTransitionMixin, models.Model):
     )
     sku = models.CharField(max_length=254)
     email = models.EmailField()
-    status = FSMIntegerField(choices=CHOICES, default=NEW)
+    status = FSMIntegerField(choices=CHOICES,
+                             default=NEW,
+                             protected=True)
 
     unique_together = ('order', 'sku', 'email')
 

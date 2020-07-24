@@ -1,0 +1,6 @@
+---
+other:
+  - |
+    The status field on the Order and OrderItem models is now
+    protected and thus immutable, except via the defined state
+    transitions.

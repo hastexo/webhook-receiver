@@ -43,8 +43,10 @@ class ProcessOrderTest(ShopifyTestCase):
         # Even with the exception raised, it's the task failure
         # handler's job to set the status to ERROR. Given the async
         # nature of the task, though, the object reference doesn't
-        # learn of the update until we refresh from the database.
-        order.refresh_from_db()
+        # learn of the update until we read back the order. This can't
+        # just use refresh_from_db(), because of the FSM-protected
+        # status field.
+        order = Order.objects.get(pk=order.id)
         self.assertEqual(order.status, Order.ERROR)
 
     def test_valid_order(self):
@@ -92,5 +94,7 @@ class ProcessOrderTest(ShopifyTestCase):
 
         self.assertEqual(result.state, 'SUCCESS')
 
-        order.refresh_from_db()
+        # Read back the order (can't just use refresh_from_db(),
+        # because of the FSM-protected status field)
+        order = Order.objects.get(pk=order.id)
         self.assertEqual(order.status, Order.PROCESSED)
