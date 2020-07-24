@@ -8,10 +8,7 @@ from django.conf import settings
 
 from django.test import TestCase
 
-try:
-    from unittest.mock import Mock
-except ImportError:
-    from mock import Mock
+from unittest.mock import Mock
 
 
 class ShopifyTestCase(TestCase):
