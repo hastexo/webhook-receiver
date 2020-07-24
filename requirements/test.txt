@@ -4,3 +4,5 @@ django-webtest
 requests-mock
 tox
 python-dotenv
+pyamqp
+mysqlclient
