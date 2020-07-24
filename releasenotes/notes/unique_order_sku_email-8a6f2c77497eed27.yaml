@@ -1,0 +1,8 @@
+---
+fixes:
+  - |
+    Shopify order items are now enforced for uniqueness per email,
+    order, and SKU. The previous unique_together model property did
+    not produce the desired effect; a UniqueConstraint declaration
+    does. This means that the minimum required Django release is now
+    2.2, which is the release that added proper constraints support.

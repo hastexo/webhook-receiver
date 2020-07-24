@@ -57,6 +57,10 @@ class Order(ConcurrentTransitionMixin, models.Model):
 class OrderItem(ConcurrentTransitionMixin, models.Model):
     class Meta:
         app_label = APP_LABEL
+        constraints = [
+            models.UniqueConstraint(fields=['order', 'sku', 'email'],
+                                    name='unique_order_sku_email')
+        ]
 
     NEW = STATE.NEW
     PROCESSING = STATE.PROCESSING
@@ -74,8 +78,6 @@ class OrderItem(ConcurrentTransitionMixin, models.Model):
     status = FSMIntegerField(choices=CHOICES,
                              default=NEW,
                              protected=True)
-
-    unique_together = ('order', 'sku', 'email')
 
     @transition(field=status,
                 source=NEW,

@@ -3,10 +3,8 @@
 from __future__ import unicode_literals
 
 import datetime
-import warnings
 
 from django.test import TestCase
-from django.db import connection
 from django.db import DatabaseError, IntegrityError
 
 from django_fsm import TransitionNotAllowed
@@ -125,19 +123,18 @@ class TestOrderItem(TestCase):
     def test_same_order_same_email_same_sku(self):
         # Do we fail to create an order item with the same order
         # reference, SKU, and email?
-        #
-        # Note: the unique_together constraint is enforced at the
-        # database level. The sqlite3 backend does not support it.
+        first_order_item = self.model()
+        first_order_item.order = self.order_item.order
+        first_order_item.sku = self.order_item.sku
+        first_order_item.email = self.order_item.email
+        first_order_item.save()
+
         second_order_item = self.model()
-        second_order_item.order = self.order_item.order
-        second_order_item.sku = self.order_item.sku
-        second_order_item.email = self.order_item.email
-        if connection.vendor in ['sqlite']:
-            warnings.warn("Unable to test for unique_together "
-                          "constraint enforcement with %s" % connection.vendor)
-        else:
-            with self.assertRaises(DatabaseError):
-                second_order_item.save()
+        second_order_item.order = first_order_item.order
+        second_order_item.sku = first_order_item.sku
+        second_order_item.email = first_order_item.email
+        with self.assertRaises(DatabaseError):
+            second_order_item.save()
 
     def test_start_processing(self):
         # Can we start processing the order item, and does this result
