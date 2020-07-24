@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    example_settings.py now contains an example for selecting a Celery broker
+    via the DJANGO_CELERY_BROKER_URL environment variable, and for automatically
+    switching Celery into ALWAYS_EAGER mode if that variable is unset.

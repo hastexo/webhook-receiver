@@ -70,7 +70,11 @@ INSTALLED_APPS = [
     'edx_shopify',
 ]
 
-CELERY_ALWAYS_EAGER = True
+# Async task processing via Celery
+CELERY_BROKER_URL = env.str('DJANGO_CELERY_BROKER_URL', default="")
+# If the broker URL is empty, run Celery in always-eager mode.
+CELERY_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
+
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
