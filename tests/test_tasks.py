@@ -98,3 +98,57 @@ class ProcessOrderTest(ShopifyTestCase):
         # because of the FSM-protected status field)
         order = Order.objects.get(pk=order.id)
         self.assertEqual(order.status, Order.PROCESSED)
+
+    def test_order_collision(self):
+        order, created = record_order(self.json_payload)
+
+        enrollment_response = {
+            'action': 'enroll',
+            'courses': {
+                'course-v1:org+course+run1': {
+                    'action': 'enroll',
+                    'results': [
+                        {
+                            'identifier': 'learner@example.com',
+                            'after': {
+                                'enrollment': False,
+                                'allowed': True,
+                                'user': False,
+                                'auto_enroll': True
+                            },
+                            'before': {
+                                'enrollment': False,
+                                'allowed': False,
+                                'user': False,
+                                'auto_enroll': False
+                            }
+                        }
+                    ],
+                    'auto_enroll': True}
+            },
+            'email_students': True,
+            'auto_enroll': True
+        }
+
+        with requests_mock.Mocker() as m:
+            m.register_uri('POST',
+                           self.token_uri,
+                           json=self.token_response)
+            m.register_uri('POST',
+                           self.enroll_uri,
+                           json=enrollment_response)
+            result1 = process.delay(self.json_payload)
+            result2 = process.delay(self.json_payload)
+            result3 = process.delay(self.json_payload)
+            result1.get(5)
+            result2.get(5)
+            result3.get(5)
+
+        self.assertEqual(result1.state, 'SUCCESS')
+        self.assertEqual(result2.state, 'SUCCESS')
+        self.assertEqual(result3.state, 'SUCCESS')
+
+        # Read back the order (can't just use refresh_from_db(),
+        # because of the FSM-protected status field)
+        order = Order.objects.get(pk=order.id)
+        self.assertEqual(order.status, Order.PROCESSED)

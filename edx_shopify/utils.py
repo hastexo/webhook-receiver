@@ -38,9 +38,17 @@ def process_order(order, data, send_email=False, logger=None):
     if not logger:
         logger = logging.getLogger(__name__)
 
-    if order.status != Order.NEW:
+    if order.status == Order.PROCESSING:
+        logger.warning('Order %s is already '
+                       'being processed, ignoring' % order.id)
+        return
+    elif order.status == Order.PROCESSED:
         logger.warning('Order %s has already '
                        'been processed, ignoring' % order.id)
+        return
+    elif order.status == Order.ERROR:
+        logger.warning('Order %s has previously '
+                       'failed to process, ignoring' % order.id)
         return
 
     # Start processing the order. A concurrent attempt to access the
