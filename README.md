@@ -28,7 +28,7 @@ It currently provides the following endpoints:
 * You must enable the Bulk Enrollment view. This view is disabled in a
   default Open edX configuration. To enable it, add
   `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.yml`, and
-  restart `edxapp`.
+  restart the `lms` service via `supervisord`.
 
 * The Bulk Enrollment view also requires that you set
   `ENABLE_COMBINED_LOGIN_REGISTRATION: true`. Combined login
