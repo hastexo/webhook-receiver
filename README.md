@@ -1,15 +1,9 @@
-[![PyPI version](https://img.shields.io/pypi/v/edx-webhooks.svg)](https://pypi.python.org/pypi/edx-shopify)
-[![Build Status](https://travis-ci.org/hastexo/edx-webhooks.svg?branch=master)](https://travis-ci.org/hastexo/edx-shopify)
-[![codecov](https://codecov.io/gh/hastexo/edx-webhooks/branch/master/graph/badge.svg)](https://codecov.io/gh/hastexo/edx-shopify)
-
-
-
 # edX Webhooks
 
-This is a Django app that listens for incoming webhooks, and then
-translates those into calls against the Open edX REST APIs.
+This is a small Django app that listens for incoming webhooks, and
+then translates those into calls against the Open edX REST APIs.
 
-It currently provides the following endpoints:
+It currently provides the following endpoint:
 
 * `webhooks/shopify/order/create` accepts a POST request with JSON
   data, as it would be received by a Shopify webhook firing.  When the
@@ -17,9 +11,10 @@ It currently provides the following endpoints:
   configuration" below), students will be enrolled on the appropriate
   courses as soon as an order is created. This requires that your Open
   edX installation enables the Bulk Enrollment View, and is intended
-  as a replacement for [Open edX
-  E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/),
-  for organizations that already use Shopify as a selling platform.
+  for organizations that already use Shopify as a selling platform,
+  and have thus no intention to deploy [Open edX
+  E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/).
+
 
 ## Open edX Configuration Requirements
 
@@ -90,14 +85,8 @@ To deploy `edx-webhooks` as part of your Django application:
 
     ```python
     INSTALLED_APPS = [
-        'social_django',
         'edx_shopify',
     ],
-    AUTHENTICATION_BACKENDS = (
-        'auth_backends.backends.EdXOAuth2',
-        'django.contrib.auth.backends.ModelBackend',
-    )
-    SOCIAL_AUTH_STRATEGY = 'auth_backends.strategies.EdxDjangoStrategy'
     WEBHOOK_SETTINGS = [
         "edx_shopify": {
             "api_key": "YOUR_SHOPIFY_API_KEY",
@@ -107,7 +96,7 @@ To deploy `edx-webhooks` as part of your Django application:
     ```
 
 You can also configure your application using environment variables
-and/or a `.env` file; an illustrated example of this is in
+and/or a dotenv (`.env`) file; an illustrated example of this is in
 `example_settings.py`.
 
 ## Shopify configuration
