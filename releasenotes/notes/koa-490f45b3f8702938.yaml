@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The test matrix has been updated to track the requirements defined
+    for the Open edX Koa release. As such, this application should be
+    able to be installed alongside Open edX Koa.
