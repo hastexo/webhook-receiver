@@ -1,0 +1,6 @@
+-r base.txt
+celery<4.5
+django<2.3
+edx-rest-api-client<5.3
+anyjson
+

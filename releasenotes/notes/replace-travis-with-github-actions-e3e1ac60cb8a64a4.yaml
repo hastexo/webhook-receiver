@@ -1,0 +1,5 @@
+---
+other:
+  - |
+    Automated testing via Travis CI has been dropped. Unit and
+    integration tests now run via GitHub Actions, and GitLab CI.
