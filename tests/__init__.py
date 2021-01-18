@@ -17,7 +17,7 @@ class ShopifyTestCase(TestCase):
         # Grab an example payload and make it available to test
         # methods as a raw string and as a JSON dictionary.
         payload_file = os.path.join(os.path.dirname(__file__),
-                                    'post.json')
+                                    'shopify.json')
         self.raw_payload = open(payload_file, 'rb').read()
         self.json_payload = json.load(open(payload_file, 'r'))
 
