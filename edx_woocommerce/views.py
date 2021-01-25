@@ -22,36 +22,37 @@ logger = logging.getLogger(__name__)
 @require_POST
 def order_create(request):
     # Load configuration
-    conf = settings.WEBHOOK_SETTINGS['edx_shopify']
+    conf = settings.WEBHOOK_SETTINGS['edx_woocommerce']
 
     # Process request
     try:
-        hmac = request.META['HTTP_X_SHOPIFY_HMAC_SHA256']
+        source = request.META['HTTP_X_WC_WEBHOOK_SOURCE']
     except KeyError:
-        logger.error('Request is missing X-Shopify-Hmac-Sha256 header')
+        logger.error('Request is missing X-WC-Webhook-Source header')
         return HttpResponse(status=400)
 
-    try:
-        shop_domain = request.META['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-    except KeyError:
-        logger.error('Request is missing X-Shopify-Shop-Domain header')
-        return HttpResponse(status=400)
-
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-    except ValueError:
-        logger.error('Unable to parse request body as UTF-8 JSON')
-        return HttpResponse(status=400)
-
-    if (conf['shop_domain'] != shop_domain):
-        logger.error('Unknown shop domain %s' % shop_domain)
+    if (conf['source'] != source):
+        logger.error('Unknown source %s' % source)
         return HttpResponse(status=403)
 
-    if (not hmac_is_valid(conf['api_key'],
-                          request.body,
+    try:
+        hmac = request.META['HTTP_X_WC_WEBHOOK_SIGNATURE']
+    except KeyError:
+        logger.error('Request is missing X-WC-Webhook-Signature header')
+        return HttpResponse(status=400)
+
+    body = request.body
+    if (not hmac_is_valid(conf['secret'],
+                          body,
                           hmac)):
         logger.error('Failed to verify HMAC signature')
         return HttpResponse(status=403)
+
+    try:
+        data = json.loads(body.decode('utf-8'))
+    except ValueError:
+        logger.error('Unable to parse request body as UTF-8 JSON')
+        return HttpResponse(status=400)
 
     # Record order
     order, created = record_order(data)
@@ -60,11 +61,7 @@ def order_create(request):
     else:
         logger.info('Retrieved order %s' % order.id)
 
-    send_email = True
-    try:
-        send_email = conf['send_email']
-    except KeyError:
-        pass
+    send_email = conf.get('send_email', True)
 
     # Process order
     if order.status == Order.NEW:

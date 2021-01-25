@@ -13,9 +13,9 @@ def record_order(data):
     return Order.objects.get_or_create(
         id=data['id'],
         defaults={
-            'email': data['customer']['email'],
-            'first_name': data['customer']['first_name'],
-            'last_name': data['customer']['last_name']
+            'email': data['billing']['email'],
+            'first_name': data['billing']['first_name'],
+            'last_name': data['billing']['last_name']
         }
     )
 
@@ -66,12 +66,30 @@ def process_line_item(order, item):
     errors, to be handled up the stack.
     """
 
-    # Fetch relevant fields from the item
+    # Fetch SKU from the item
     sku = item['sku']
-    email = next(
-        p['value'] for p in item['properties']
-        if p['name'] == 'email'
-    )
+
+    # Fetch the participant email address from the line item meta
+    # data. meta_data is very quirky: it's a list of lists, with zero
+    # or one nested list, which if it exists, contains exactly one
+    # dictionary.
+    email = None
+    for meta in [m['value'] for m in item['meta_data']]:
+        try:
+            # If meta is itself not a list, this throws IndexError
+            # which we catch.
+            meta_item = meta[0]
+            # If the item is not a dictionary, this throws TypeError
+            # which we throw up the stack. If the item is expectedly a
+            # dictionary but does not have a 'type' key, this throws
+            # KeyError instead, which we catch.
+            if meta_item['type'] == 'email':
+                # OK, we've found a learner email address, let's use
+                # that.
+                email = meta_item['_value']
+                break
+        except (IndexError, KeyError):
+            pass
 
     # Store line item, prop
     order_item, created = OrderItem.objects.get_or_create(

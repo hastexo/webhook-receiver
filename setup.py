@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Setup for the edX Shopify app."""
+"""Setup for the edX Webhooks app."""
 
 import os
 from setuptools import find_packages, setup

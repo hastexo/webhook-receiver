@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'edx_shopify',
+    'edx_woocommerce',
 ]
 
 # Async task processing via Celery
@@ -103,7 +104,8 @@ CACHES = {
                          default="dummycache://"),
 }
 
-ROOT_URLCONF = 'edx_shopify.urls'
+# Replace this with your own ROOT_URLCONF
+ROOT_URLCONF = 'tests.urls'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
@@ -121,5 +123,11 @@ WEBHOOK_SETTINGS = {
                                default=''),
         'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_API_KEY',
                            default=''),
-    }
+    },
+    'edx_woocommerce': {
+        'source': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SOURCE',
+                          default=''),
+        'secret': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SECRET',
+                          default=''),
+    },
 }

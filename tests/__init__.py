@@ -11,21 +11,27 @@ from django.test import TestCase
 from unittest.mock import Mock
 
 
-class ShopifyTestCase(TestCase):
+class WebhookTestCase(TestCase):
+    """Abstract base class for webhook tests"""
+    PAYLOAD_FILENAME = None
+    COURSE_ID_STRING = 'course-v1:org+course+run1'
+
+    def setUp(self):
+        self.setup_payload()
+        self.setup_requests()
 
     def setup_payload(self):
         # Grab an example payload and make it available to test
         # methods as a raw string and as a JSON dictionary.
         payload_file = os.path.join(os.path.dirname(__file__),
-                                    'shopify.json')
+                                    self.PAYLOAD_FILENAME)
         self.raw_payload = open(payload_file, 'rb').read()
         self.json_payload = json.load(open(payload_file, 'r'))
 
     def setup_course(self):
         # TODO: Set up a mock course
-        course_id_string = 'course-v1:org+course+run1'
         course = Mock()
-        course.id = course_id_string
+        course.id = self.COURSE_ID_STRING
 
     def setup_requests(self):
         self.token_uri = '%s/oauth2/access_token' % settings.SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT  # noqa: E501
@@ -35,3 +41,11 @@ class ShopifyTestCase(TestCase):
             'access_token': 'foobar',
             'expires_in': 3600
         }
+
+
+class ShopifyTestCase(WebhookTestCase):
+    PAYLOAD_FILENAME = 'shopify.json'
+
+
+class WooCommerceTestCase(WebhookTestCase):
+    PAYLOAD_FILENAME = 'woocommerce.json'

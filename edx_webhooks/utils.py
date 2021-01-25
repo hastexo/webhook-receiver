@@ -1,3 +1,6 @@
+import base64
+import hashlib
+import hmac
 import logging
 
 from django.core.validators import validate_email
@@ -7,6 +10,17 @@ from edx_rest_api_client.client import OAuthAPIClient
 EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll/'
 
 logger = logging.getLogger(__name__)
+
+
+def get_hmac(key, body):
+    digest = hmac.new(key.encode('utf-8'),
+                      body,
+                      hashlib.sha256).digest()
+    return base64.b64encode(digest).decode()
+
+
+def hmac_is_valid(key, body, hmac_to_verify):
+    return get_hmac(key, body) == hmac_to_verify
 
 
 def enroll_in_course(course_id,

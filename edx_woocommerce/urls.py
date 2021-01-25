@@ -5,5 +5,5 @@ from django.urls import path
 urlpatterns = [
     path('order/create',
          order_create,
-         name='shopify_order_create'),
+         name='woocommerce_order_create'),
 ]

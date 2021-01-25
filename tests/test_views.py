@@ -43,31 +43,31 @@ class TestOrderCreation(ShopifyTestCase):
         self.setup_course()
 
     def test_invalid_method_put(self):
-        response = self.client.put('/shopify/order/create',
+        response = self.client.put('/webhooks/shopify/order/create',
                                    self.raw_payload,
                                    content_type='application/json')
         self.assertEqual(response.status_code, 405)
 
     def test_invalid_method_get(self):
-        response = self.client.get('/shopify/order/create')
+        response = self.client.get('/webhooks/shopify/order/create')
         self.assertEqual(response.status_code, 405)
 
     def test_missing_hmac_header(self):
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     self.raw_payload,
                                     HTTP_X_SHOPIFY_SHOP_DOMAIN='example.com',
                                     content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_missing_shop_domain_header(self):
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     self.raw_payload,
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.corrupt_signature,  # noqa: E501
                                     content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_incorrect_signature(self):
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     self.raw_payload,
                                     content_type='application/json',
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.incorrect_signature,  # noqa: E501
@@ -75,7 +75,7 @@ class TestOrderCreation(ShopifyTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_corrupt_signature(self):
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     self.raw_payload,
                                     content_type='application/json',
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.corrupt_signature,  # noqa: E501
@@ -86,7 +86,7 @@ class TestOrderCreation(ShopifyTestCase):
         # Invalid JSON
         corrupt_payload = "{".encode('utf-8')
 
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     corrupt_payload,
                                     content_type='application/json',
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
@@ -94,7 +94,7 @@ class TestOrderCreation(ShopifyTestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_invalid_domain(self):
-        response = self.client.post('/shopify/order/create',
+        response = self.client.post('/webhooks/shopify/order/create',
                                     self.raw_payload,
                                     content_type='application/json',
                                     HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501
@@ -137,7 +137,7 @@ class TestOrderCreation(ShopifyTestCase):
             m.register_uri('POST',
                            self.enroll_uri,
                            json=enrollment_response)
-            response = self.client.post('/shopify/order/create',
+            response = self.client.post('/webhooks/shopify/order/create',
                                         self.raw_payload,
                                         content_type='application/json',
                                         HTTP_X_SHOPIFY_HMAC_SHA256=self.correct_signature,  # noqa: E501

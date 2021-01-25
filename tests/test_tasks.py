@@ -16,10 +16,6 @@ from . import ShopifyTestCase
 
 class ProcessOrderTest(ShopifyTestCase):
 
-    def setUp(self):
-        self.setup_payload()
-        self.setup_requests()
-
     def test_invalid_sku(self):
         fixup_payload = self.raw_payload.decode('utf-8').replace("course-v1:org+course+run1",  # noqa: E501
                                                                  "course-v1:org+nosuchcourse+run1")  # noqa: E501
