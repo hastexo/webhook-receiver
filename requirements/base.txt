@@ -1,2 +1,3 @@
 django-fsm
 django-environ
+django-ipware

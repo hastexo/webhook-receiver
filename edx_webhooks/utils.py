@@ -1,15 +1,66 @@
 import base64
 import hashlib
 import hmac
+import json
 import logging
 
 from django.core.validators import validate_email
 from django.conf import settings
+from django.db import transaction
+
 from edx_rest_api_client.client import OAuthAPIClient
+from ipware import get_client_ip
+
+from .models import JSONWebhookData
+
 
 EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll/'
 
 logger = logging.getLogger(__name__)
+
+
+def receive_json_webhook(request):
+    # Grab data from the request, and save it to the database right
+    # away.
+    data = JSONWebhookData(headers=dict(request.headers),
+                           body=request.body)
+    with transaction.atomic():
+        data.save()
+
+    # Transition the state from NEW to PROCESSING
+    data.start_processing()
+    with transaction.atomic():
+        data.save()
+
+    # Look up the source IP
+    ip, is_routable = get_client_ip(request)
+    if ip is None:
+        logger.warning("Unable to get client IP for webhook %s" % data.id)
+    data.source = ip
+    with transaction.atomic():
+        data.save()
+
+    # Parse the payload as JSON
+    try:
+        try:
+            data.content = json.loads(data.body)
+            data.finish_processing()
+        except TypeError:
+            # Python <3.6 can't call json.loads() on a byte string
+            data.content = json.loads(data.body.decode('utf-8'))
+            data.finish_processing()
+    except Exception:
+        # For any other exception, set the state to ERROR and then
+        # throw the exception up the stack. The following finally
+        # block ensures that we'll still get our state change
+        # persisted in the database.
+        data.fail()
+        raise
+    finally:
+        with transaction.atomic():
+            data.save()
+
+    return data
 
 
 def get_hmac(key, body):

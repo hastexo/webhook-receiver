@@ -1,4 +1,8 @@
-from django.db import models
+from django.db.models import Model
+from django.db.models import UniqueConstraint, ForeignKey, PROTECT
+from django.db.models import BigIntegerField, EmailField
+from django.db.models import CharField, DateTimeField
+
 from django.utils import timezone
 
 from django_fsm import FSMIntegerField, ConcurrentTransitionMixin, transition
@@ -13,7 +17,7 @@ APP_LABEL = 'edx_woocommerce'
 logger = logging.getLogger(__name__)
 
 
-class Order(ConcurrentTransitionMixin, models.Model):
+class Order(ConcurrentTransitionMixin, Model):
     class Meta:
         app_label = APP_LABEL
 
@@ -24,11 +28,11 @@ class Order(ConcurrentTransitionMixin, models.Model):
 
     CHOICES = STATE.CHOICES
 
-    id = models.BigIntegerField(primary_key=True, editable=False)
-    email = models.EmailField()
-    first_name = models.CharField(max_length=254)
-    last_name = models.CharField(max_length=254)
-    received = models.DateTimeField(default=timezone.now)
+    id = BigIntegerField(primary_key=True, editable=False)
+    email = EmailField()
+    first_name = CharField(max_length=254)
+    last_name = CharField(max_length=254)
+    received = DateTimeField(default=timezone.now)
     status = FSMIntegerField(choices=CHOICES,
                              default=NEW,
                              protected=True)
@@ -54,12 +58,12 @@ class Order(ConcurrentTransitionMixin, models.Model):
         logger.debug('Failed to process order %s' % self.id)
 
 
-class OrderItem(ConcurrentTransitionMixin, models.Model):
+class OrderItem(ConcurrentTransitionMixin, Model):
     class Meta:
         app_label = APP_LABEL
         constraints = [
-            models.UniqueConstraint(fields=['order', 'sku', 'email'],
-                                    name='unique_order_sku_email')
+            UniqueConstraint(fields=['order', 'sku', 'email'],
+                             name='unique_order_sku_email')
         ]
 
     NEW = STATE.NEW
@@ -69,12 +73,12 @@ class OrderItem(ConcurrentTransitionMixin, models.Model):
 
     CHOICES = STATE.CHOICES
 
-    order = models.ForeignKey(
+    order = ForeignKey(
         Order,
-        on_delete=models.PROTECT
+        on_delete=PROTECT
     )
-    sku = models.CharField(max_length=254)
-    email = models.EmailField()
+    sku = CharField(max_length=254)
+    email = EmailField()
     status = FSMIntegerField(choices=CHOICES,
                              default=NEW,
                              protected=True)
