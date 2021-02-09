@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from edx_webhooks.utils import receive_json_webhook, hmac_is_valid
 from edx_webhooks.utils import fail_and_save, finish_and_save
 from .utils import record_order
-from .models import Order
+from .models import WooCommerceOrder as Order
 from .tasks import process
 
 

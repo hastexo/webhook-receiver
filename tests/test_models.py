@@ -9,7 +9,8 @@ from django.db import DatabaseError, IntegrityError
 
 from django_fsm import TransitionNotAllowed
 
-from edx_shopify.models import Order, OrderItem
+from edx_shopify.models import ShopifyOrder as Order
+from edx_shopify.models import ShopifyOrderItem as OrderItem
 
 
 class TestOrder(TestCase):

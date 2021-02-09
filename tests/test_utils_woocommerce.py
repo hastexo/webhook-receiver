@@ -7,7 +7,8 @@ from django.core.exceptions import ValidationError
 from requests.exceptions import HTTPError
 
 from edx_woocommerce.utils import process_order, process_line_item, record_order  # noqa: E501
-from edx_woocommerce.models import Order, OrderItem
+from edx_woocommerce.models import WooCommerceOrder as Order
+from edx_woocommerce.models import WooCommerceOrderItem as OrderItem
 
 import requests_mock
 

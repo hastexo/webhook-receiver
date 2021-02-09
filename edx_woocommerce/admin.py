@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Order, OrderItem
+from .models import WooCommerceOrder
+from .models import WooCommerceOrderItem
 
-admin.site.register(Order)
-admin.site.register(OrderItem)
+admin.site.register(WooCommerceOrder)
+admin.site.register(WooCommerceOrderItem)

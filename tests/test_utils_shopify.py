@@ -7,7 +7,8 @@ from django.core.exceptions import ValidationError
 from requests.exceptions import HTTPError
 
 from edx_shopify.utils import process_order, process_line_item, record_order
-from edx_shopify.models import Order, OrderItem
+from edx_shopify.models import ShopifyOrder as Order
+from edx_shopify.models import ShopifyOrderItem as OrderItem
 
 import requests_mock
 

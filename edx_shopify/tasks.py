@@ -4,7 +4,7 @@ from celery.utils.log import get_task_logger
 
 from django.db import transaction
 
-from .models import Order
+from .models import ShopifyOrder as Order
 from .utils import process_order
 
 logger = get_task_logger(__name__)

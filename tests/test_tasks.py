@@ -5,7 +5,7 @@ import json
 
 from requests.exceptions import HTTPError
 
-from edx_shopify.models import Order
+from edx_shopify.models import ShopifyOrder as Order
 from edx_shopify.tasks import process
 from edx_shopify.utils import record_order
 

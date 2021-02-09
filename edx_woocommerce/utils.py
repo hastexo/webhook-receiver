@@ -6,7 +6,8 @@ from django.db import transaction
 
 from edx_webhooks.utils import enroll_in_course
 
-from .models import Order, OrderItem
+from .models import WooCommerceOrder as Order
+from .models import WooCommerceOrderItem as OrderItem
 
 
 def record_order(data):
