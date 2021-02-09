@@ -1,14 +1,13 @@
 from __future__ import unicode_literals
 
 import logging
-import json
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from edx_webhooks.utils import hmac_is_valid
+from edx_webhooks.utils import receive_json_webhook, hmac_is_valid
 
 from .utils import record_order
 from .models import Order
@@ -24,37 +23,35 @@ def order_create(request):
     # Load configuration
     conf = settings.WEBHOOK_SETTINGS['edx_shopify']
 
-    # Process request
     try:
-        hmac = request.META['HTTP_X_SHOPIFY_HMAC_SHA256']
-    except KeyError:
-        logger.error('Request is missing X-Shopify-Hmac-Sha256 header')
+        data = receive_json_webhook(request)
+    except Exception:
         return HttpResponse(status=400)
 
     try:
-        shop_domain = request.META['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        shop_domain = data.headers['X-Shopify-Shop-Domain']
     except KeyError:
         logger.error('Request is missing X-Shopify-Shop-Domain header')
-        return HttpResponse(status=400)
-
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-    except ValueError:
-        logger.error('Unable to parse request body as UTF-8 JSON')
         return HttpResponse(status=400)
 
     if (conf['shop_domain'] != shop_domain):
         logger.error('Unknown shop domain %s' % shop_domain)
         return HttpResponse(status=403)
 
+    try:
+        hmac = data.headers['X-Shopify-Hmac-Sha256']
+    except KeyError:
+        logger.error('Request is missing X-Shopify-Hmac-Sha256 header')
+        return HttpResponse(status=400)
+
     if (not hmac_is_valid(conf['api_key'],
-                          request.body,
+                          data.body,
                           hmac)):
         logger.error('Failed to verify HMAC signature')
         return HttpResponse(status=403)
 
     # Record order
-    order, created = record_order(data)
+    order, created = record_order(data.content)
     if created:
         logger.info('Created order %s' % order.id)
     else:
@@ -69,7 +66,7 @@ def order_create(request):
     # Process order
     if order.status == Order.NEW:
         logger.info('Scheduling order %s for processing' % order.id)
-        process.delay(data, send_email)
+        process.delay(data.content, send_email)
     else:
         logger.info('Order %s already processed, '
                     'nothing to do' % order.id)
