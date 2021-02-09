@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from django_fsm import FSMIntegerField, ConcurrentTransitionMixin, transition
 
-from . import STATE
+from edx_webhooks import STATE
 
 import logging
 
