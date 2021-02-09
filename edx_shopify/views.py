@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from edx_webhooks.utils import receive_json_webhook, hmac_is_valid
+from edx_webhooks.utils import fail_and_save, finish_and_save
 
 from .utils import record_order
 from .models import Order
@@ -32,23 +33,29 @@ def order_create(request):
         shop_domain = data.headers['X-Shopify-Shop-Domain']
     except KeyError:
         logger.error('Request is missing X-Shopify-Shop-Domain header')
+        fail_and_save(data)
         return HttpResponse(status=400)
 
     if (conf['shop_domain'] != shop_domain):
         logger.error('Unknown shop domain %s' % shop_domain)
+        fail_and_save(data)
         return HttpResponse(status=403)
 
     try:
         hmac = data.headers['X-Shopify-Hmac-Sha256']
     except KeyError:
         logger.error('Request is missing X-Shopify-Hmac-Sha256 header')
+        fail_and_save(data)
         return HttpResponse(status=400)
 
     if (not hmac_is_valid(conf['api_key'],
                           data.body,
                           hmac)):
         logger.error('Failed to verify HMAC signature')
+        fail_and_save(data)
         return HttpResponse(status=403)
+
+    finish_and_save(data)
 
     # Record order
     order, created = record_order(data.content)

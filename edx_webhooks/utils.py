@@ -44,23 +44,30 @@ def receive_json_webhook(request):
     try:
         try:
             data.content = json.loads(data.body)
-            data.finish_processing()
         except TypeError:
             # Python <3.6 can't call json.loads() on a byte string
             data.content = json.loads(data.body.decode('utf-8'))
-            data.finish_processing()
     except Exception:
         # For any other exception, set the state to ERROR and then
         # throw the exception up the stack. The following finally
         # block ensures that we'll still get our state change
         # persisted in the database.
-        data.fail()
+        fail_and_save(data)
         raise
-    finally:
-        with transaction.atomic():
-            data.save()
 
     return data
+
+
+def fail_and_save(data):
+    data.fail()
+    with transaction.atomic():
+        data.save()
+
+
+def finish_and_save(data):
+    data.finish_processing()
+    with transaction.atomic():
+        data.save()
 
 
 def get_hmac(key, body):

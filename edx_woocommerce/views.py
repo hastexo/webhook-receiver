@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from edx_webhooks.utils import receive_json_webhook, hmac_is_valid
+from edx_webhooks.utils import fail_and_save, finish_and_save
 from .utils import record_order
 from .models import Order
 from .tasks import process
@@ -31,23 +32,29 @@ def order_create(request):
         source = data.headers['X-Wc-Webhook-Source']
     except KeyError:
         logger.error('Request is missing X-WC-Webhook-Source header')
+        fail_and_save(data)
         return HttpResponse(status=400)
 
     if (conf['source'] != source):
         logger.error('Unknown source %s' % source)
+        fail_and_save(data)
         return HttpResponse(status=403)
 
     try:
         hmac = data.headers['X-Wc-Webhook-Signature']
     except KeyError:
         logger.error('Request is missing X-WC-Webhook-Signature header')
+        fail_and_save(data)
         return HttpResponse(status=400)
 
     if (not hmac_is_valid(conf['secret'],
                           data.body,
                           hmac)):
         logger.error('Failed to verify HMAC signature')
+        fail_and_save(data)
         return HttpResponse(status=403)
+
+    finish_and_save(data)
 
     # Record order
     order, created = record_order(data.content)
