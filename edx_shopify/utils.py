@@ -12,11 +12,12 @@ from .models import ShopifyOrderItem as OrderItem
 
 def record_order(data):
     return Order.objects.get_or_create(
-        id=data['id'],
+        id=data.content['id'],
         defaults={
-            'email': data['customer']['email'],
-            'first_name': data['customer']['first_name'],
-            'last_name': data['customer']['last_name']
+            'webhook': data,
+            'email': data.content['customer']['email'],
+            'first_name': data.content['customer']['first_name'],
+            'last_name': data.content['customer']['last_name']
         }
     )
 

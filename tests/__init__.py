@@ -8,6 +8,8 @@ from django.conf import settings
 
 from django.test import TestCase
 
+from edx_webhooks.models import JSONWebhookData
+
 from unittest.mock import Mock
 
 
@@ -27,6 +29,12 @@ class WebhookTestCase(TestCase):
                                     self.PAYLOAD_FILENAME)
         self.raw_payload = open(payload_file, 'rb').read()
         self.json_payload = json.load(open(payload_file, 'r'))
+
+    def setup_webhook_data(self):
+        self.webhook_data = JSONWebhookData(headers={},
+                                            body=b'',
+                                            content=self.json_payload)
+        self.webhook_data.save()
 
     def setup_course(self):
         # TODO: Set up a mock course

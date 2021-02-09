@@ -5,6 +5,8 @@ import json
 
 from requests.exceptions import HTTPError
 
+from edx_webhooks.models import JSONWebhookData
+
 from edx_shopify.models import ShopifyOrder as Order
 from edx_shopify.tasks import process
 from edx_shopify.utils import record_order
@@ -16,11 +18,20 @@ from . import ShopifyTestCase
 
 class ProcessOrderTest(ShopifyTestCase):
 
+    def setUp(self):
+        self.setup_payload()
+        self.setup_webhook_data()
+        self.setup_requests()
+
     def test_invalid_sku(self):
         fixup_payload = self.raw_payload.decode('utf-8').replace("course-v1:org+course+run1",  # noqa: E501
                                                                  "course-v1:org+nosuchcourse+run1")  # noqa: E501
         fixup_json_payload = json.loads(fixup_payload)
-        order, created = record_order(fixup_json_payload)
+        fixup_webhook_data = JSONWebhookData(headers={},
+                                             body=b'',
+                                             content=fixup_json_payload)
+        fixup_webhook_data.save()
+        order, created = record_order(fixup_webhook_data)
 
         result = None
         with requests_mock.Mocker() as m:
@@ -46,7 +57,7 @@ class ProcessOrderTest(ShopifyTestCase):
         self.assertEqual(order.status, Order.ERROR)
 
     def test_valid_order(self):
-        order, created = record_order(self.json_payload)
+        order, created = record_order(self.webhook_data)
 
         result = None
 
@@ -96,7 +107,7 @@ class ProcessOrderTest(ShopifyTestCase):
         self.assertEqual(order.status, Order.PROCESSED)
 
     def test_order_collision(self):
-        order, created = record_order(self.json_payload)
+        order, created = record_order(self.webhook_data)
 
         enrollment_response = {
             'action': 'enroll',

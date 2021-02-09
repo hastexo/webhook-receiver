@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 
 from requests.exceptions import HTTPError
 
+from edx_webhooks.models import JSONWebhookData
+
 from edx_woocommerce.utils import process_order, process_line_item, record_order  # noqa: E501
 from edx_woocommerce.models import WooCommerceOrder as Order
 from edx_woocommerce.models import WooCommerceOrderItem as OrderItem
@@ -19,16 +21,17 @@ class RecordOrderTest(WooCommerceTestCase):
 
     def setUp(self):
         self.setup_payload()
+        self.setup_webhook_data()
 
     def test_record_order(self):
         # Make sure the order gets created, and that its ID matches
         # that in the payload
-        order1, created1 = record_order(self.json_payload)
+        order1, created1 = record_order(self.webhook_data)
         self.assertTrue(created1)
         self.assertEqual(order1.id, self.json_payload['id'])
         # Try to create the order again, make sure we get a reference
         # instead
-        order2, created2 = record_order(self.json_payload)
+        order2, created2 = record_order(self.webhook_data)
         self.assertFalse(created2)
         self.assertEqual(order1, order2)
 
@@ -37,11 +40,12 @@ class ProcessOrderTest(WooCommerceTestCase):
 
     def setUp(self):
         self.setup_payload()
+        self.setup_webhook_data()
         self.setup_course()
         self.setup_requests()
 
     def test_valid_order(self):
-        order, created = record_order(self.json_payload)
+        order, created = record_order(self.webhook_data)
 
         enrollment_response = {
             'action': 'enroll',
@@ -86,7 +90,12 @@ class ProcessOrderTest(WooCommerceTestCase):
         fixup_payload = self.raw_payload.decode('utf-8').replace("course-v1:org+course+run1",  # noqa: E501
                                                                  "course-v1:org+nosuchcourse+run1")  # noqa: E501
         fixup_json_payload = json.loads(fixup_payload)
-        order, created = record_order(fixup_json_payload)
+        fixup_webhook_data = JSONWebhookData(headers={},
+                                             body=b'',
+                                             content=fixup_json_payload)
+        fixup_webhook_data.save()
+
+        order, created = record_order(fixup_webhook_data)
 
         with requests_mock.Mocker() as m:
             m.register_uri('POST',

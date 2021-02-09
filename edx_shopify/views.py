@@ -58,7 +58,7 @@ def order_create(request):
     finish_and_save(data)
 
     # Record order
-    order, created = record_order(data.content)
+    order, created = record_order(data)
     if created:
         logger.info('Created order %s' % order.id)
     else:

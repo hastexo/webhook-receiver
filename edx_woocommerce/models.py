@@ -1,7 +1,7 @@
 from django.db.models import UniqueConstraint, ForeignKey
-from django.db.models import PROTECT
+from django.db.models import PROTECT, SET_NULL
 
-from edx_webhooks.models import Order, OrderItem
+from edx_webhooks.models import Order, OrderItem, JSONWebhookData
 
 APP_LABEL = 'edx_woocommerce'
 
@@ -11,6 +11,12 @@ class WooCommerceOrder(Order):
     class Meta:
         app_label = APP_LABEL
         abstract = False
+
+    webhook = ForeignKey(
+        JSONWebhookData,
+        on_delete=SET_NULL,
+        null=True
+    )
 
 
 class WooCommerceOrderItem(OrderItem):

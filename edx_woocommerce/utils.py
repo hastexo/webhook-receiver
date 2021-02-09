@@ -12,11 +12,12 @@ from .models import WooCommerceOrderItem as OrderItem
 
 def record_order(data):
     return Order.objects.get_or_create(
-        id=data['id'],
+        id=data.content['id'],
         defaults={
-            'email': data['billing']['email'],
-            'first_name': data['billing']['first_name'],
-            'last_name': data['billing']['last_name']
+            'webhook': data,
+            'email': data.content['billing']['email'],
+            'first_name': data.content['billing']['first_name'],
+            'last_name': data.content['billing']['last_name']
         }
     )
 
