@@ -6,14 +6,24 @@ then translates those into calls against the Open edX REST APIs.
 It currently provides the following endpoint:
 
 * `webhooks/shopify/order/create` accepts a POST request with JSON
-  data, as it would be received by a Shopify webhook firing.  When the
-  webhook is configured properly on Shopify (see "Shopify
-  configuration" below), students will be enrolled on the appropriate
-  courses as soon as an order is created. This requires that your Open
-  edX installation enables the Bulk Enrollment View, and is intended
-  for organizations that already use Shopify as a selling platform,
-  and have thus no intention to deploy [Open edX
-  E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/).
+  data, as it would be received by a [Shopify
+  webhook](https://help.shopify.com/en/manual/orders/notifications/webhooks)
+  firing.
+
+* `webhooks/woocommerce/order/create` accepts a POST request with JSON
+  data, as it would be received by a [WooCommerce
+  webhook](https://docs.woocommerce.com/document/webhooks/) firing.
+
+When the webhook is configured properly on sender side (see "Webhook
+sender Configuration Requirements", below), students will be enrolled
+on the appropriate courses as soon as an order is created. This
+requires that your Open edX installation enables the Bulk Enrollment
+View.
+
+These webhooks are intended for organizations that already use Shopify
+or WooCommerce as their selling platform, and have thus no intention
+to deploy [Open edX
+E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/).
 
 
 ## Open edX Configuration Requirements
@@ -68,9 +78,9 @@ service can communicate with Open edX.
 
 ## Deployment
 
-The easiest way for platform administrators to deploy the edX Shopify app and
-its dependencies to an Open edX installation is to deploy a minimal
-server that exposes the desired endpoint(s).
+The easiest way for platform administrators to deploy the edX Webhooks
+app and its dependencies to an Open edX installation is to deploy a
+minimal server that exposes the desired endpoint(s).
 
 To deploy `edx-webhooks` as part of your Django application:
 
@@ -85,7 +95,9 @@ To deploy `edx-webhooks` as part of your Django application:
 
     ```python
     INSTALLED_APPS = [
-        'edx_shopify',
+        'edx_webhooks',
+        'edx_webhooks_shopify',
+        'edx_webhooks_woocommerce',
     ],
     WEBHOOK_SETTINGS = [
         "edx_shopify": {
@@ -97,9 +109,12 @@ To deploy `edx-webhooks` as part of your Django application:
 
 You can also configure your application using environment variables
 and/or a dotenv (`.env`) file; an illustrated example of this is in
-`example_settings.py`.
+`example.env`.
 
-## Shopify configuration
+## Webhook Sender Configuration Requirements
+
+
+## Shopify
 
 For the Shopify webhook to work, you'll need to customize your Shopify
 theme to [collect customized product
@@ -111,6 +126,21 @@ JavaScript, so that it is always filled with a valid email address.
 
 Furthermore, you need to make sure that your product SKU is a valid edX course
 ID in your LMS, following the `course-v1:<org>+<course>+<run>` format.
+
+
+## WooCommerce
+
+For WooCommerce, you’ll need a plugin that can provide additional
+product input fields, like [Product Input Fields for
+WooCommerce](https://wordpress.org/plugins/product-input-fields-for-woocommerce/). The
+webhook receiver will process *the value of the first input field of
+type `email`*
+(regardless of the field’s title) as the email address of the learner
+to be enrolled.
+
+Furthermore, as with Shopify you need to make sure that your product
+SKU is a valid edX course ID in your LMS, following the
+`course-v1:<org>+<course>+<run>` format.
 
 
 ## License
