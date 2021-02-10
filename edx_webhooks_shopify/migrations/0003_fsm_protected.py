@@ -7,7 +7,7 @@ import django_fsm
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('edx_shopify', '0002_fsm'),
+        ('edx_webhooks_shopify', '0002_fsm'),
     ]
 
     operations = [

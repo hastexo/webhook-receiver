@@ -3,7 +3,7 @@ from django.db.models import PROTECT, SET_NULL
 
 from edx_webhooks.models import Order, OrderItem, JSONWebhookData
 
-APP_LABEL = 'edx_woocommerce'
+APP_LABEL = 'edx_webhooks_woocommerce'
 
 
 class WooCommerceOrder(Order):

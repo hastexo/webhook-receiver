@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('edx_shopify', '0003_fsm_protected'),
+        ('edx_webhooks_shopify', '0003_fsm_protected'),
     ]
 
     operations = [

@@ -22,8 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'edx_webhooks',
-    'edx_shopify',
-    'edx_woocommerce',
+    'edx_webhooks_shopify',
+    'edx_webhooks_woocommerce',
 ]
 
 MIDDLEWARE = [
@@ -108,13 +108,13 @@ SOCIAL_AUTH_EDX_OAUTH2_SECRET = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_SECRET',
                                         default='')
 
 WEBHOOK_SETTINGS = {
-    'edx_shopify': {
+    'edx_webhooks_shopify': {
         'shop_domain': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_SHOP_DOMAIN',  # noqa: E501
                                default=''),
         'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_API_KEY',
                            default=''),
     },
-    'edx_woocommerce': {
+    'edx_webhooks_woocommerce': {
         'source': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SOURCE',
                           default=''),
         'secret': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SECRET',

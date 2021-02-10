@@ -5,8 +5,13 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
+    # SQLite < 3.23 (i.e. anything before Ubuntu Focal) can't handle
+    # atomic table renames. Once only Ubuntu Focal is meant to be supported,
+    # we can drop this.
+    atomic = False
+    
     dependencies = [
-        ('edx_shopify', '0004_unique_order_sku_email'),
+        ('edx_webhooks_shopify', '0004_unique_order_sku_email'),
     ]
 
     operations = [

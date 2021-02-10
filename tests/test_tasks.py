@@ -7,9 +7,9 @@ from requests.exceptions import HTTPError
 
 from edx_webhooks.models import JSONWebhookData
 
-from edx_shopify.models import ShopifyOrder as Order
-from edx_shopify.tasks import process
-from edx_shopify.utils import record_order
+from edx_webhooks_shopify.models import ShopifyOrder as Order
+from edx_webhooks_shopify.tasks import process
+from edx_webhooks_shopify.utils import record_order
 
 import requests_mock
 

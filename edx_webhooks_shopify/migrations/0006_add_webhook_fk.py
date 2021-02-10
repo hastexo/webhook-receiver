@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('edx_webhooks', '0001_initial'),
-        ('edx_woocommerce', '0002_rename_models'),
+        ('edx_webhooks_shopify', '0005_rename_models'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='woocommerceorder',
+            model_name='shopifyorder',
             name='webhook',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='edx_webhooks.JSONWebhookData'),
         ),

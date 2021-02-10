@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('sku', models.CharField(max_length=254)),
                 ('email', models.EmailField(max_length=254)),
                 ('status', django_fsm.FSMIntegerField(choices=[(0, 'New'), (1, 'Processing'), (2, 'Processed'), (-1, 'Error')], default=0, protected=True)),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='edx_woocommerce.Order')),
+                ('order', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='edx_webhooks_woocommerce.Order')),
             ],
             bases=(django_fsm.ConcurrentTransitionMixin, models.Model),
         ),
