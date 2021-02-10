@@ -1,3 +1,6 @@
+from .celery import app as celery_app  # noqa: F401
+
+
 class STATE:
     NEW = 0
     PROCESSING = 1

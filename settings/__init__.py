@@ -87,8 +87,11 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default="")
 
 # Async task processing via Celery
 CELERY_BROKER_URL = env.str('DJANGO_CELERY_BROKER_URL', default="")
-# If the broker URL is empty, run Celery in always-eager mode.
+
+# If the broker URL is empty, run Celery in always-eager mode. Define
+# both ALWAYS_EAGER (Celery <4) and TASK_ALWAYS_EAGER (Celery >= 4).
 CELERY_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
+CELERY_TASK_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
 
 DATABASES = {
     'default': env.db('DJANGO_DATABASE_URL',
