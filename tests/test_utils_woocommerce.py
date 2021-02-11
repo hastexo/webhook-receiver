@@ -8,7 +8,8 @@ from requests.exceptions import HTTPError
 
 from edx_webhooks.models import JSONWebhookData
 
-from edx_webhooks_woocommerce.utils import process_order, process_line_item, record_order  # noqa: E501
+from edx_webhooks_woocommerce.utils import record_order
+from edx_webhooks_woocommerce.utils import process_order, process_line_item
 from edx_webhooks_woocommerce.models import WooCommerceOrder as Order
 from edx_webhooks_woocommerce.models import WooCommerceOrderItem as OrderItem
 

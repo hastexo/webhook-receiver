@@ -8,8 +8,8 @@ from requests.exceptions import HTTPError
 
 from edx_webhooks.models import JSONWebhookData
 
-from edx_webhooks_shopify.utils import record_order, process_order
-from edx_webhooks_shopify.utils import process_line_item
+from edx_webhooks_shopify.utils import record_order
+from edx_webhooks_shopify.utils import process_order, process_line_item
 from edx_webhooks_shopify.models import ShopifyOrder as Order
 from edx_webhooks_shopify.models import ShopifyOrderItem as OrderItem
 
