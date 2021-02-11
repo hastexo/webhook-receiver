@@ -114,7 +114,7 @@ and/or a dotenv (`.env`) file; an illustrated example of this is in
 ## Webhook Sender Configuration Requirements
 
 
-## Shopify
+### Shopify
 
 For the Shopify webhook to work, you'll need to customize your Shopify
 theme to [collect customized product
@@ -128,7 +128,7 @@ Furthermore, you need to make sure that your product SKU is a valid edX course
 ID in your LMS, following the `course-v1:<org>+<course>+<run>` format.
 
 
-## WooCommerce
+### WooCommerce
 
 For WooCommerce, you’ll need a plugin that can provide additional
 product input fields, like [Product Input Fields for
@@ -141,6 +141,34 @@ to be enrolled.
 Furthermore, as with Shopify you need to make sure that your product
 SKU is a valid edX course ID in your LMS, following the
 `course-v1:<org>+<course>+<run>` format.
+
+
+## Technical background
+
+If you’re interested in how webhook processing works in a little more
+detail, here’s how:
+
+1. When the webhook sender invokes the webhook, we immediately store
+   its payload, headers, and request source in the database. This
+   happens synchronously, while receiving the initial request.
+
+2. Also during the initial request, we check the webhook’s signature,
+   and some data identifying the source, from both the headers and the
+   payload. If we deem any of them malformed, we return HTTP 400
+   (Bad Request); if we consider them well-formed but invalid (such
+   as, coming from the wrong source or not having a correct
+   signature), we return HTTP 403 (Forbidden).
+
+3. If we’re able to verify the incoming payload, we return HTTP 200
+   (OK), create an asynchronous processing task for Celery, and this
+   concludes synchronous request processing.
+
+4. The asynchronous Celery task then makes REST API calls against the
+   Open edX instance, invoking the Bulk Enrollment view to enroll
+   learners in courses. If any REST API call results in an error,
+   Celery will retry up to three times (using the standard retry delay
+   of 3 minutes, unless you’re overriding this in your Celery
+   configuration).
 
 
 ## License
