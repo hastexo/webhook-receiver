@@ -10,6 +10,9 @@ from .models import WooCommerceOrder as Order
 from .models import WooCommerceOrderItem as OrderItem
 
 
+logger = logging.getLogger(__name__)
+
+
 def record_order(data):
     return Order.objects.get_or_create(
         id=data.content['id'],
@@ -22,15 +25,8 @@ def record_order(data):
     )
 
 
-def process_order(order, data, send_email=False, logger=None):
-    if not logger:
-        logger = logging.getLogger(__name__)
-
-    if order.status == Order.PROCESSING:
-        logger.warning('Order %s is already '
-                       'being processed, ignoring' % order.id)
-        return
-    elif order.status == Order.PROCESSED:
+def process_order(order, data, send_email=False):
+    if order.status == Order.PROCESSED:
         logger.warning('Order %s has already '
                        'been processed, ignoring' % order.id)
         return
@@ -39,15 +35,22 @@ def process_order(order, data, send_email=False, logger=None):
                        'failed to process, ignoring' % order.id)
         return
 
-    # Start processing the order. A concurrent attempt to access the
-    # same order will result in django_fsm.ConcurrentTransition on
-    # save(), causing a rollback.
-    order.start_processing()
-    with transaction.atomic():
-        order.save()
+    if order.status == Order.PROCESSING:
+        logger.warning('Order %s is already '
+                       'being processed, retrying' % order.id)
+    else:
+        # Start processing the order. A concurrent attempt to access the
+        # same order will result in django_fsm.ConcurrentTransition on
+        # save(), causing a rollback.
+        order.start_processing()
+        with transaction.atomic():
+            order.save()
 
     # Process line items
     for item in data['line_items']:
+        # Process the line item. If the enrollment throws
+        # an exception, we throw that exception up the stack so we can
+        # attempt to retry order processing.
         process_line_item(order, item)
         logger.debug('Successfully processed line item '
                      '%s for order %s' % (item, order.id))
@@ -100,9 +103,17 @@ def process_line_item(order, item):
         email=email
     )
 
-    order_item.start_processing()
-    with transaction.atomic():
-        order_item.save()
+    if order_item.status == OrderItem.PROCESSED:
+        logger.warning('Order item %s has already '
+                       'been processed, ignoring' % order_item.id)
+        return
+    elif order_item.status == OrderItem.PROCESSING:
+        logger.warning('Order item %s is already '
+                       'being processed, retrying' % order_item.id)
+    else:
+        order_item.start_processing()
+        with transaction.atomic():
+            order_item.save()
 
     # Create an enrollment for the line item
     enroll_in_course(sku, email)
