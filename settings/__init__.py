@@ -112,15 +112,15 @@ SOCIAL_AUTH_EDX_OAUTH2_SECRET = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_SECRET',
 
 WEBHOOK_SETTINGS = {
     'edx_webhooks_shopify': {
-        'shop_domain': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_SHOP_DOMAIN',  # noqa: E501
+        'shop_domain': env.str('DJANGO_WEBHOOK_SETTINGS_SHOPIFY_SHOP_DOMAIN',
                                default=''),
-        'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_SHOPIFY_API_KEY',
+        'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_SHOPIFY_API_KEY',
                            default=''),
     },
     'edx_webhooks_woocommerce': {
-        'source': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SOURCE',
+        'source': env.str('DJANGO_WEBHOOK_SETTINGS_WOOCOMMERCE_SOURCE',
                           default=''),
-        'secret': env.str('DJANGO_WEBHOOK_SETTINGS_EDX_WOOCOMMERCE_SECRET',
+        'secret': env.str('DJANGO_WEBHOOK_SETTINGS_WOOCOMMERCE_SECRET',
                           default=''),
     },
 }
