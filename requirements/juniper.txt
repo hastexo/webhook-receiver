@@ -1,7 +1,6 @@
 -r base.txt
 celery<3.2
 django<2.3
-django-celery<3.4
 anyjson<0.4
 pyyaml<5.4
 edx-auth-backends<3.2
