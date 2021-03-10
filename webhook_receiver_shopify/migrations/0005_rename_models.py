@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     atomic = False
     
     dependencies = [
-        ('edx_webhooks_shopify', '0004_unique_order_sku_email'),
+        ('webhook_receiver_shopify', '0004_unique_order_sku_email'),
     ]
 
     operations = [

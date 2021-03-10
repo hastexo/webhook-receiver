@@ -3,9 +3,9 @@ from celery.utils.log import get_task_logger
 
 from requests.exceptions import HTTPError
 
-from edx_webhooks.tasks import OrderTask
+from webhook_receiver.tasks import OrderTask
 
-from .models import ShopifyOrder as Order
+from .models import WooCommerceOrder as Order
 from .utils import process_order
 
 

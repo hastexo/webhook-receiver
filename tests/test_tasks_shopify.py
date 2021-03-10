@@ -5,11 +5,11 @@ import json
 
 from requests.exceptions import HTTPError
 
-from edx_webhooks.models import JSONWebhookData
+from webhook_receiver.models import JSONWebhookData
 
-from edx_webhooks_shopify.models import ShopifyOrder as Order
-from edx_webhooks_shopify.tasks import process
-from edx_webhooks_shopify.utils import record_order
+from webhook_receiver_shopify.models import ShopifyOrder as Order
+from webhook_receiver_shopify.tasks import process
+from webhook_receiver_shopify.utils import record_order
 
 import requests_mock
 

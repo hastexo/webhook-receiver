@@ -23,7 +23,7 @@ class ShopifyTestOrderCreation(ShopifyTestCase):
         # work (webhooks are explicitly exempted from CSRF protection)
         self.client = Client(enforce_csrf_checks=True)
 
-        conf = settings.WEBHOOK_SETTINGS['edx_webhooks_shopify']
+        conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_shopify']
 
         # Calculate 3 SHA256 hashes over the payload, which the
         # webhook handler must verify and accept or reject: a correct
@@ -162,7 +162,7 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
         # work (webhooks are explicitly exempted from CSRF protection)
         self.client = Client(enforce_csrf_checks=True)
 
-        conf = settings.WEBHOOK_SETTINGS['edx_webhooks_woocommerce']
+        conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_woocommerce']
 
         # Calculate 3 SHA256 hashes over the payload, which the
         # webhook handler must verify and accept or reject: a correct

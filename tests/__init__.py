@@ -8,7 +8,7 @@ from django.conf import settings
 
 from django.test import TestCase
 
-from edx_webhooks.models import JSONWebhookData
+from webhook_receiver.models import JSONWebhookData
 
 from unittest.mock import Mock
 

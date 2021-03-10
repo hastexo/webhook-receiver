@@ -6,12 +6,12 @@ from django.core.exceptions import ValidationError
 
 from requests.exceptions import HTTPError
 
-from edx_webhooks.models import JSONWebhookData
+from webhook_receiver.models import JSONWebhookData
 
-from edx_webhooks_woocommerce.utils import record_order
-from edx_webhooks_woocommerce.utils import process_order, process_line_item
-from edx_webhooks_woocommerce.models import WooCommerceOrder as Order
-from edx_webhooks_woocommerce.models import WooCommerceOrderItem as OrderItem
+from webhook_receiver_woocommerce.utils import record_order
+from webhook_receiver_woocommerce.utils import process_order, process_line_item
+from webhook_receiver_woocommerce.models import WooCommerceOrder as Order
+from webhook_receiver_woocommerce.models import WooCommerceOrderItem as OrderItem
 
 import requests_mock
 

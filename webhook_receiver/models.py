@@ -17,7 +17,7 @@ from . import STATE
 import logging
 
 
-APP_LABEL = 'edx_webhooks'
+APP_LABEL = 'webhook_receiver'
 
 logger = logging.getLogger(__name__)
 

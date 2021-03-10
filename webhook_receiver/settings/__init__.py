@@ -21,9 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'edx_webhooks',
-    'edx_webhooks_shopify',
-    'edx_webhooks_woocommerce',
+    'webhook_receiver',
+    'webhook_receiver_shopify',
+    'webhook_receiver_woocommerce',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +48,7 @@ TEMPLATES = [
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 
-ROOT_URLCONF = 'edx_webhooks.urls'
+ROOT_URLCONF = 'webhook_receiver.urls'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # We're setting a default of None here as that will cause Django to
@@ -110,17 +110,17 @@ SOCIAL_AUTH_EDX_OAUTH2_KEY = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_KEY',
 SOCIAL_AUTH_EDX_OAUTH2_SECRET = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_SECRET',
                                         default='')
 
-WEBHOOK_SETTINGS = {
-    'edx_webhooks_shopify': {
-        'shop_domain': env.str('DJANGO_WEBHOOK_SETTINGS_SHOPIFY_SHOP_DOMAIN',
+WEBHOOK_RECEIVER_SETTINGS = {
+    'webhook_receiver_shopify': {
+        'shop_domain': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN',
                                default=''),
-        'api_key': env.str('DJANGO_WEBHOOK_SETTINGS_SHOPIFY_API_KEY',
+        'api_key': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY',
                            default=''),
     },
-    'edx_webhooks_woocommerce': {
-        'source': env.str('DJANGO_WEBHOOK_SETTINGS_WOOCOMMERCE_SOURCE',
+    'webhook_receiver_woocommerce': {
+        'source': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SOURCE',
                           default=''),
-        'secret': env.str('DJANGO_WEBHOOK_SETTINGS_WOOCOMMERCE_SECRET',
+        'secret': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SECRET',
                           default=''),
     },
 }

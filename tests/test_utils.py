@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from edx_webhooks.utils import hmac_is_valid
+from webhook_receiver.utils import hmac_is_valid
 
 
 class SignatureVerificationTest(TestCase):

@@ -7,14 +7,14 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('edx_webhooks', '0001_initial'),
-        ('edx_webhooks_shopify', '0005_rename_models'),
+        ('webhook_receiver', '0001_initial'),
+        ('webhook_receiver_shopify', '0005_rename_models'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='shopifyorder',
             name='webhook',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='edx_webhooks.JSONWebhookData'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='webhook_receiver.JSONWebhookData'),
         ),
     ]

@@ -91,15 +91,15 @@ To deploy `edx-webhooks` as part of your Django application:
     ```
 
 2. Add it to the `INSTALLED_APPS` list in `settings.py`, and also add
-   a `WEBHOOK_SETTINGS` dictionary, like so:
+   a `WEBHOOK_RECEIVER_SETTINGS` dictionary, like so:
 
     ```python
     INSTALLED_APPS = [
-        'edx_webhooks',
-        'edx_webhooks_shopify',
-        'edx_webhooks_woocommerce',
+        'webhook_receiver',
+        'webhook_receiver_shopify',
+        'webhook_receiver_woocommerce',
     ],
-    WEBHOOK_SETTINGS = [
+    WEBHOOK_RECEIVER_SETTINGS = [
         "edx_shopify": {
             "api_key": "YOUR_SHOPIFY_API_KEY",
             "shop_domain": "YOUR.SHOPIFY.DOMAIN",

@@ -1,12 +1,12 @@
 from django.db.models import UniqueConstraint, ForeignKey
 from django.db.models import PROTECT, SET_NULL
 
-from edx_webhooks.models import Order, OrderItem, JSONWebhookData
+from webhook_receiver.models import Order, OrderItem, JSONWebhookData
 
-APP_LABEL = 'edx_webhooks_shopify'
+APP_LABEL = 'webhook_receiver_woocommerce'
 
 
-class ShopifyOrder(Order):
+class WooCommerceOrder(Order):
 
     class Meta:
         app_label = APP_LABEL
@@ -19,7 +19,7 @@ class ShopifyOrder(Order):
     )
 
 
-class ShopifyOrderItem(OrderItem):
+class WooCommerceOrderItem(OrderItem):
 
     class Meta:
         app_label = APP_LABEL
@@ -30,6 +30,6 @@ class ShopifyOrderItem(OrderItem):
         ]
 
     order = ForeignKey(
-        ShopifyOrder,
+        WooCommerceOrder,
         on_delete=PROTECT
     )

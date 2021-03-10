@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('edx_webhooks_woocommerce', '0001_initial'),
+        ('webhook_receiver_woocommerce', '0001_initial'),
     ]
 
     operations = [

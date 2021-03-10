@@ -7,11 +7,10 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from edx_webhooks.utils import receive_json_webhook, hmac_is_valid
-from edx_webhooks.utils import fail_and_save, finish_and_save
-
+from webhook_receiver.utils import receive_json_webhook, hmac_is_valid
+from webhook_receiver.utils import fail_and_save, finish_and_save
 from .utils import record_order
-from .models import Order
+from .models import WooCommerceOrder as Order
 from .tasks import process
 
 
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 @require_POST
 def order_create(request):
     # Load configuration
-    conf = settings.WEBHOOK_SETTINGS['edx_webhooks_shopify']
+    conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_woocommerce']
 
     try:
         data = receive_json_webhook(request)
@@ -30,25 +29,25 @@ def order_create(request):
         return HttpResponse(status=400)
 
     try:
-        shop_domain = data.headers['X-Shopify-Shop-Domain']
+        source = data.headers['X-Wc-Webhook-Source']
     except KeyError:
-        logger.error('Request is missing X-Shopify-Shop-Domain header')
+        logger.error('Request is missing X-WC-Webhook-Source header')
         fail_and_save(data)
         return HttpResponse(status=400)
 
-    if (conf['shop_domain'] != shop_domain):
-        logger.error('Unknown shop domain %s' % shop_domain)
+    if (conf['source'] != source):
+        logger.error('Unknown source %s' % source)
         fail_and_save(data)
         return HttpResponse(status=403)
 
     try:
-        hmac = data.headers['X-Shopify-Hmac-Sha256']
+        hmac = data.headers['X-Wc-Webhook-Signature']
     except KeyError:
-        logger.error('Request is missing X-Shopify-Hmac-Sha256 header')
+        logger.error('Request is missing X-WC-Webhook-Signature header')
         fail_and_save(data)
         return HttpResponse(status=400)
 
-    if (not hmac_is_valid(conf['api_key'],
+    if (not hmac_is_valid(conf['secret'],
                           data.body,
                           hmac)):
         logger.error('Failed to verify HMAC signature')
@@ -64,11 +63,7 @@ def order_create(request):
     else:
         logger.info('Retrieved order %s' % order.id)
 
-    send_email = True
-    try:
-        send_email = conf['send_email']
-    except KeyError:
-        pass
+    send_email = conf.get('send_email', True)
 
     # Process order
     if order.status == Order.NEW:

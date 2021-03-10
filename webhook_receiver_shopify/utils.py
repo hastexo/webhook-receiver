@@ -4,10 +4,10 @@ import logging
 
 from django.db import transaction
 
-from edx_webhooks.utils import enroll_in_course
+from webhook_receiver.utils import enroll_in_course
 
-from .models import WooCommerceOrder as Order
-from .models import WooCommerceOrderItem as OrderItem
+from .models import ShopifyOrder as Order
+from .models import ShopifyOrderItem as OrderItem
 
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,9 @@ def record_order(data):
         id=data.content['id'],
         defaults={
             'webhook': data,
-            'email': data.content['billing']['email'],
-            'first_name': data.content['billing']['first_name'],
-            'last_name': data.content['billing']['last_name']
+            'email': data.content['customer']['email'],
+            'first_name': data.content['customer']['first_name'],
+            'last_name': data.content['customer']['last_name']
         }
     )
 
@@ -71,30 +71,12 @@ def process_line_item(order, item):
     errors, to be handled up the stack.
     """
 
-    # Fetch SKU from the item
+    # Fetch relevant fields from the item
     sku = item['sku']
-
-    # Fetch the participant email address from the line item meta
-    # data. meta_data is very quirky: it's a list of lists, with zero
-    # or one nested list, which if it exists, contains exactly one
-    # dictionary.
-    email = None
-    for meta in [m['value'] for m in item['meta_data']]:
-        try:
-            # If meta is itself not a list, this throws IndexError
-            # which we catch.
-            meta_item = meta[0]
-            # If the item is not a dictionary, this throws TypeError
-            # which we throw up the stack. If the item is expectedly a
-            # dictionary but does not have a 'type' key, this throws
-            # KeyError instead, which we catch.
-            if meta_item['type'] == 'email':
-                # OK, we've found a learner email address, let's use
-                # that.
-                email = meta_item['_value']
-                break
-        except (IndexError, KeyError):
-            pass
+    email = next(
+        p['value'] for p in item['properties']
+        if p['name'] == 'email'
+    )
 
     # Store line item, prop
     order_item, created = OrderItem.objects.get_or_create(
@@ -115,7 +97,9 @@ def process_line_item(order, item):
         with transaction.atomic():
             order_item.save()
 
-    # Create an enrollment for the line item
+    # Create an enrollment for the line item. If the enrollment throws
+    # an exception, we throw that exception up the stack so we can
+    # attempt to retry order processing.
     enroll_in_course(sku, email)
 
     # Mark the item as processed
