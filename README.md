@@ -100,10 +100,14 @@ To deploy `edx-webhooks` as part of your Django application:
         'webhook_receiver_woocommerce',
     ],
     WEBHOOK_RECEIVER_SETTINGS = [
-        "edx_shopify": {
-            "api_key": "YOUR_SHOPIFY_API_KEY",
-            "shop_domain": "YOUR.SHOPIFY.DOMAIN",
-        }
+        'shopify': {
+            'shop_domain': 'example.com',
+            'api_key': 'secret',
+        },
+        'woocommerce': {
+            'source': 'https://example.com',
+            'secret': 'secret',
+        },
     ],
     ```
 

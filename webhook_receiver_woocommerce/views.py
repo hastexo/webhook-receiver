@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 @require_POST
 def order_create(request):
     # Load configuration
-    conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_woocommerce']
+    conf = settings.WEBHOOK_RECEIVER_SETTINGS['woocommerce']
 
     try:
         data = receive_json_webhook(request)
