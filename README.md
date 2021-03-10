@@ -1,9 +1,9 @@
-# edX Webhooks
+# Open edX Webhook Receiver
 
 This is a small Django app that listens for incoming webhooks, and
 then translates those into calls against the Open edX REST APIs.
 
-It currently provides the following endpoint:
+It currently provides the following endpoints:
 
 * `webhooks/shopify/order/create` accepts a POST request with JSON
   data, as it would be received by a [Shopify
@@ -14,15 +14,15 @@ It currently provides the following endpoint:
   data, as it would be received by a [WooCommerce
   webhook](https://docs.woocommerce.com/document/webhooks/) firing.
 
-When the webhook is configured properly on sender side (see "Webhook
-sender Configuration Requirements", below), students will be enrolled
-on the appropriate courses as soon as an order is created. This
-requires that your Open edX installation enables the Bulk Enrollment
-View.
+When the webhook is configured properly on the sender side (see
+"Webhook Sender Configuration Requirements", below), students will be
+enrolled in the appropriate courses as soon as an order is
+created. This requires that your Open edX installation runs with the
+Bulk Enrollment View enabled.
 
 These webhooks are intended for organizations that already use Shopify
-or WooCommerce as their selling platform, and have thus no intention
-to deploy [Open edX
+or WooCommerce as their selling platform, and thus have no need or
+intention to deploy [Open edX
 E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/).
 
 
@@ -32,8 +32,8 @@ E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-r
 
 * You must enable the Bulk Enrollment view. This view is disabled in a
   default Open edX configuration. To enable it, add
-  `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.yml`, and
-  restart the `lms` service via `supervisord`.
+  `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.yml` configuration
+  file, and restart the `lms` service via `supervisord`.
 
 * The Bulk Enrollment view also requires that you set
   `ENABLE_COMBINED_LOGIN_REGISTRATION: true`. Combined login
@@ -43,37 +43,37 @@ E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-r
 Once the bulk enrollment view is enabled, you can try accessing it via
 `https://your.openedx.domain/api/bulk_enroll/v1/bulk_enroll/`. If the
 view is properly enabled, Open edX will respond with an HTTP status
-code of 401 (unauthorized) rather than 404 (not found).
+code of 401 (Unauthorized) rather than 404 (Not Found).
 
 ### edX OAuth2 Client
 
 Next, you need to create an OAuth2 client so that the webhook
 service can communicate with Open edX.
 
-1. Open `https://your.openedx.domain/admin/oauth2_provider/application`.
+1. In the Django admin interface
+   (`https://your.openedx.domain/admin/`), open **Django OAuth
+   Toolkit** → **Applications.**
 
 2. Select **Add application**.
 
-3. Leave the **User** field blank.
+3. Leave **Client id** unchanged.
 
-4. For **Client Name**, enter `Webhook receiver`, or any other client
+4. Select a **User** that has global _Staff_ permissions.
+
+5. Leave **Redirect uris** blank.
+
+6. For **Client type,** select **Confidential**.
+
+7. For **Authorization grant type**, select **Client credentials**.
+
+8. Leave **Client secret** unchanged.
+
+9. For **Name**, enter `Webhook receiver`, or any other client
    name you find appropriate.
 
-5. For **URL,** enter the URL that your Webhook receiver runs at, such
-   as `https://webhooks.openedx.domain`.
+10. Leave **Skip authorization** unchecked.
 
-6. For **Redirect URL**, enter
-   `https://webhooks.openedx.domain/complete/edx-oauth2`. This is the OAuth
-   client endpoint.
-
-   The system automatically generates values in the **Client ID** and
-   **Client Secret** fields.
-
-7. For **Client Type,** select **Authorization code.**
-
-8. Enable **Skip Authorization.**
-
-9. Select **Save.**
+11. Select **Save**.
 
 
 ## Deployment
