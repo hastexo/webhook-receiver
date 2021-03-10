@@ -162,7 +162,7 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
         # work (webhooks are explicitly exempted from CSRF protection)
         self.client = Client(enforce_csrf_checks=True)
 
-        conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_woocommerce']
+        conf = settings.WEBHOOK_RECEIVER_SETTINGS['webhook_receiver_woocommerce']  # noqa: E501
 
         # Calculate 3 SHA256 hashes over the payload, which the
         # webhook handler must verify and accept or reject: a correct

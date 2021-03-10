@@ -11,7 +11,7 @@ from webhook_receiver.models import JSONWebhookData
 from webhook_receiver_woocommerce.utils import record_order
 from webhook_receiver_woocommerce.utils import process_order, process_line_item
 from webhook_receiver_woocommerce.models import WooCommerceOrder as Order
-from webhook_receiver_woocommerce.models import WooCommerceOrderItem as OrderItem
+from webhook_receiver_woocommerce.models import WooCommerceOrderItem as OrderItem  # noqa: E501
 
 import requests_mock
 
