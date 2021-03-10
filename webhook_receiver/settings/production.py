@@ -7,11 +7,11 @@ from . import *  # noqa: F403
 
 # We inherit all settings from base.py, including the anything set in
 # the environment.  However, if the environment contains the variable
-# WEBHOOKS_CFG, we open that file and parse it as YAML, and anything
-# we find there overrides any values previously set.  Thus, if we have
-# conflicting settings in the environment and the config file, the
-# config file prevails.
-CONFIG_FILE = env.str('WEBHOOKS_CFG', None)  # noqa: F405
+# WEBHOOK_RECEIVER_CFG, we open that file and parse it as YAML, and
+# anything we find there overrides any values previously set.  Thus,
+# if we have conflicting settings in the environment and the config
+# file, the config file prevails.
+CONFIG_FILE = env.str('WEBHOOK_RECEIVER_CFG', None)  # noqa: F405
 if CONFIG_FILE:
     try:
         with open(CONFIG_FILE) as f:
