@@ -1,5 +1,7 @@
 DIFF_COVER_BASE_BRANCH=main
 PYTHON_ENV=py38
+VIRTUAL_ENV?=/webhook_receiver/venv
+VENV_BIN=${VIRTUAL_ENV}/bin
 
 help:
 	@echo ''
@@ -41,7 +43,8 @@ requirements.tox:
 production-requirements:
 	pip3 install -r requirements/production.txt --exists-action w
 
-migrate: requirements.tox
+migrate: ## Apply database migrations
+	${VENV_BIN}/python manage.py migrate --no-input
 
 serve: requirements.tox
 
