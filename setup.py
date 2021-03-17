@@ -38,6 +38,6 @@ setup(
         'edx-auth-backends>=2.0.2',
     ],
     setup_requires=[
-        'setuptools-scm',
+        'setuptools-scm<6',
     ],
 )
