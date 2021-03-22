@@ -102,24 +102,31 @@ CACHES = {
                          default="dummycache://"),
 }
 
-SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT',  # noqa: E501
-                                          default='http://localhost:18000')
-SOCIAL_AUTH_EDX_OAUTH2_KEY = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_KEY',
-                                     default='')
-SOCIAL_AUTH_EDX_OAUTH2_SECRET = env.str('DJANGO_SOCIAL_AUTH_EDX_OAUTH2_SECRET',
-                                        default='')
+WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT = env.str(
+    'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT',
+    default='http://localhost:18000')
+WEBHOOK_RECEIVER_EDX_OAUTH2_KEY = env.str(
+    'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_KEY',
+    default='')
+WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET = env.str(
+    'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET',
+    default='')
 
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
-        'shop_domain': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN',  # noqa: E501
-                               default=''),
-        'api_key': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY',
-                           default=''),
+        'shop_domain': env.str(
+            'DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN',
+            default=''),
+        'api_key': env.str(
+            'DJANGO_WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY',
+            default=''),
     },
     'woocommerce': {
-        'source': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SOURCE',  # noqa: E501
-                          default=''),
-        'secret': env.str('DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SECRET',  # noqa: E501
-                          default=''),
+        'source': env.str(
+            'DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SOURCE',
+            default=''),
+        'secret': env.str(
+            'DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SECRET',
+            default=''),
     },
 }
