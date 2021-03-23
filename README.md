@@ -80,40 +80,13 @@ service can communicate with Open edX.
 
 The easiest way for platform administrators to deploy the edX Webhooks
 app and its dependencies to an Open edX installation is to deploy a
-minimal server that exposes the desired endpoint(s).
+minimal server that exposes the desired endpoint(s), using the
+`edx-configuration` Ansible playbooks. A [fork of
+`edx-configuration`](https://github.com/hastexo/edx-configuration/tree/hastexo/juniper/webhook-receiver)
+exists that defines [a `webhook_receiver`
+role](https://github.com/hastexo/edx-configuration/tree/hastexo/juniper/webhook-receiver/playbooks/roles/webhook_receiver)
+which you can add to your playbook.
 
-To deploy `edx-webhooks` as part of your Django application:
-
-1. Install it via pip (into a virtualenv, most probably):
-
-    ```
-    $ pip install edx-webhooks
-    ```
-
-2. Add it to the `INSTALLED_APPS` list in `settings.py`, and also add
-   a `WEBHOOK_RECEIVER_SETTINGS` dictionary, like so:
-
-    ```python
-    INSTALLED_APPS = [
-        'webhook_receiver',
-        'webhook_receiver_shopify',
-        'webhook_receiver_woocommerce',
-    ],
-    WEBHOOK_RECEIVER_SETTINGS = [
-        'shopify': {
-            'shop_domain': 'example.com',
-            'api_key': 'secret',
-        },
-        'woocommerce': {
-            'source': 'https://example.com',
-            'secret': 'secret',
-        },
-    ],
-    ```
-
-You can also configure your application using environment variables
-and/or a dotenv (`.env`) file; an illustrated example of this is in
-`example.env`.
 
 ## Webhook Sender Configuration Requirements
 
@@ -145,6 +118,26 @@ to be enrolled.
 Furthermore, as with Shopify you need to make sure that your product
 SKU is a valid edX course ID in your LMS, following the
 `course-v1:<org>+<course>+<run>` format.
+
+An additional quirk that is specific to WooCommerce is that it will
+[not call a
+webhook](https://github.com/woocommerce/woocommerce/issues/9350) that
+listens on any port other than 80, 443, or 8080. This means that you
+will not be able to run a separate webhook receiver service on the
+same IP address as your Open edX LMS, on a nonstandard port. To
+address this, you have two options:
+
+1. Run the webhook receiver service on a dedicated IP address. This
+   will also require a separate DNS entry, and either a dedicated
+   TLS/SSL certificate, or the use of a wildcard certificate that you
+   share with the Open edX LMS.
+2. Mount the webhook receiver under your LMS URL, using an nginx
+   `proxy_pass` directive. This enables you to receive webhooks on
+   `https://your.lms.domain/webhooks`, and they will be redirected to
+   the webhook receiver service. The Ansible `webhook_receiver` role
+   automates this; set
+   `WEBHOOK_RECEIVER_ENABLE_NGINX_INCLUDE` variable to `true` to
+   enable this functionality.
 
 
 ## Technical background
