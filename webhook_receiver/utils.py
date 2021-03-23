@@ -120,9 +120,21 @@ def enroll_in_course(course_id,
         request_params
     )
 
-    # Throw an exception if we get anything other than HTTP 200 back
-    # from the API (the only other status we might be getting back
-    # from the bulk enrollment API is HTTP 400).
+    # Throw an exception if we get any error back from the API.
+    # Apart from an HTTP 200, we might also get:
+    #
+    # HTTP 400: if we've sent a malformed request
+    # HTTP 401: if our authentication token has expired
+    # HTTP 403: if our auth token is linked to a user ID that lacks
+    #           staff credentials in one of the courses we want to
+    #           enroll the learner in
+    # HTTP 404: if we've specified a course ID that does not exist
+    # HTTP 500: in case of a server-side issue
+    if response.status_code >= 400:
+        logger.error("POST request to %s with parameters %s "
+                     "returned HTTP %s" % (bulk_enroll_url,
+                                           request_params,
+                                           response.status_code))
     response.raise_for_status()
 
     # If all is well, log the response at the debug level.

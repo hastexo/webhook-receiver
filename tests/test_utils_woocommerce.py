@@ -104,8 +104,8 @@ class ProcessOrderTest(WooCommerceTestCase):
                            json=self.token_response)
             m.register_uri('POST',
                            self.enroll_uri,
-                           status_code=400)
-            # Non-existent course should raise a 400
+                           status_code=404)
+            # Non-existent course should raise a 404
             with self.assertRaises(HTTPError):
                 process_order(order, fixup_json_payload)
 
@@ -235,13 +235,13 @@ class ProcessLineItemTest(WooCommerceTestCase):
         for line_item in line_items:
             with requests_mock.Mocker() as m:
                 # In the bulk enrollment API, an invalid course ID
-                # results in an HTTP 400
+                # results in an HTTP 404
                 m.register_uri('POST',
                                self.token_uri,
                                json=self.token_response)
                 m.register_uri('POST',
                                self.enroll_uri,
-                               status_code=400)
+                               status_code=404)
 
                 with self.assertRaises(HTTPError):
                     process_line_item(order, line_item)
