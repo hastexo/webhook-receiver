@@ -1,3 +1,4 @@
 -r koa.txt
 gunicorn
 gevent
+python-memcached
