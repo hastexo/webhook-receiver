@@ -123,12 +123,15 @@ def enroll_in_course(course_id,
     # Throw an exception if we get any error back from the API.
     # Apart from an HTTP 200, we might also get:
     #
-    # HTTP 400: if we've sent a malformed request
+    # HTTP 400: if we've sent a malformed request (for example, one
+    #           with a course ID in a format that Open edX can't
+    #           parse)
     # HTTP 401: if our authentication token has expired
     # HTTP 403: if our auth token is linked to a user ID that lacks
     #           staff credentials in one of the courses we want to
     #           enroll the learner in
     # HTTP 404: if we've specified a course ID that does not exist
+    #           (although it does follow the format that Open edX expects)
     # HTTP 500: in case of a server-side issue
     if response.status_code >= 400:
         logger.error("POST request to %s with parameters %s "
