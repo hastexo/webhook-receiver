@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 import environ
 import os
+import platform
 
 from dotenv import load_dotenv
+from logging.handlers import SysLogHandler
 
 # Populate os.environ with variables from .env (if it exists)
 load_dotenv(verbose=True)
@@ -58,25 +60,65 @@ SECRET_KEY = env.str('DJANGO_SECRET_KEY', default=None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
+hostname = platform.node().split(".")[0]
+syslog_address = '/var/run/syslog' if platform.system().lower() == 'darwin' else '/dev/log'  # noqa: E501
+syslog_format = '[service_variant=webhook_receiver]' \
+                '[%(name)s] %(levelname)s [{hostname}  %(process)d] ' \
+                '[%(filename)s:%(lineno)d] ' \
+                '- %(message)s'.format(hostname=hostname)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'default': {
-            'format': '%(levelname)s:%(name)s:%(message)s',
+        'standard': {
+            'format': '%(asctime)s %(levelname)s %(process)d '
+                      '[%(name)s] %(filename)s:%(lineno)d - %(message)s',
         },
+        'syslog_format': {'format': syslog_format},
     },
     'handlers': {
         'console': {
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'default',
+            'formatter': 'standard',
+            'stream': 'ext://sys.stdout',
+        },
+        'local': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': syslog_address,
+            'formatter': 'syslog_format',
+            'facility': SysLogHandler.LOG_LOCAL0,
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': env.str('DJANGO_LOG_LEVEL',
-                         default='WARNING').upper(),
-    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'local'],
+            'propagate': False,
+            'level': 'INFO'
+        },
+        'requests': {
+            'handlers': ['console', 'local'],
+            'propagate': True,
+            'level': 'WARNING'
+        },
+        'factory': {
+            'handlers': ['console', 'local'],
+            'propagate': True,
+            'level': 'WARNING'
+        },
+        'django.request': {
+            'handlers': ['console', 'local'],
+            'propagate': True,
+            'level': 'WARNING'
+        },
+        '': {
+            'handlers': ['console', 'local'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
 }
 
 # We populate ALLOWED_HOSTS from a comma-separated list. Running with
