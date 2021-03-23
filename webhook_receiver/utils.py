@@ -49,9 +49,7 @@ def receive_json_webhook(request):
             data.content = json.loads(data.body.decode('utf-8'))
     except Exception:
         # For any other exception, set the state to ERROR and then
-        # throw the exception up the stack. The following finally
-        # block ensures that we'll still get our state change
-        # persisted in the database.
+        # throw the exception up the stack.
         fail_and_save(data)
         raise
 
