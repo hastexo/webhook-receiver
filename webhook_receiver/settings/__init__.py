@@ -154,6 +154,10 @@ WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET = env.str(
     'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET',
     default='')
 
+WEBHOOK_RECEIVER_SKU_PREFIX = env.str(
+    'DJANGO_WEBHOOK_RECEIVER_SKU_PREFIX',
+    default='')
+
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
         'shop_domain': env.str(

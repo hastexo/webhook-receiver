@@ -3,6 +3,10 @@ import hashlib
 import hmac
 import json
 import logging
+import re
+import requests
+
+from urllib.parse import urlparse
 
 from django.core.validators import validate_email
 from django.conf import settings
@@ -17,6 +21,10 @@ from .models import JSONWebhookData
 EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll/'
 
 logger = logging.getLogger(__name__)
+
+
+class SKULookupException(Exception):
+    pass
 
 
 def receive_json_webhook(request):
@@ -77,6 +85,49 @@ def get_hmac(key, body):
 
 def hmac_is_valid(key, body, hmac_to_verify):
     return get_hmac(key, body) == hmac_to_verify
+
+
+def lookup_course_id(sku):
+    """Look up the course ID for a SKU"""
+    course_id_regex = 'course-v1:[^/]+'
+
+    # If the SKU we're given matches the regex from the beginning of
+    # its string, great. It looks like a course ID, use it verbatim.
+    if re.match(course_id_regex, sku):
+        return sku
+
+    # OK, the SKU does not look like a course ID. So, expect to be
+    # able to look up the actual course ID via an HTTP redirect.
+    lookup_url = '%s/%s%s' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,
+                              settings.WEBHOOK_RECEIVER_SKU_PREFIX,
+                              sku)
+    logger.debug('Resolving SKU %s by looking up %s.' % (sku, lookup_url))
+    resp = requests.head(lookup_url,
+                         allow_redirects=True)
+    resp.raise_for_status()
+
+    # The redirect could point to anywhere in the course: the course
+    # URL, the course /about page, the course /course page. Thus,
+    # extract the path from the redirect URL, and match it against the
+    # pattern. That way, we'll catch anything from the marker
+    # "course-v1" up to and excluding the next slash, if there is one.
+    logger.debug('Resolving SKU %s returned URL %s.' % (sku, resp.url))
+    path = urlparse(resp.url).path
+    matches = re.findall(course_id_regex,
+                         path)
+
+    # We've found a match, great. Evidently this redirect helped us to
+    # resolve a correct course ID. Return it.
+    if matches:
+        course_id = matches[0]
+        logger.debug('Resolving SKU %s returned '
+                     'course ID %s.' % (sku, course_id))
+        return course_id
+
+    # We haven't found a match, so we can't resolve to a proper course
+    # ID.
+    raise SKULookupException('Unable to find a course ID '
+                             'matching SKU %s' % sku)
 
 
 def enroll_in_course(course_id,

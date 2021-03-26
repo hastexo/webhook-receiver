@@ -4,7 +4,7 @@ import logging
 
 from django.db import transaction
 
-from webhook_receiver.utils import enroll_in_course
+from webhook_receiver.utils import enroll_in_course, lookup_course_id
 
 from .models import ShopifyOrder as Order
 from .models import ShopifyOrderItem as OrderItem
@@ -100,7 +100,8 @@ def process_line_item(order, item):
     # Create an enrollment for the line item. If the enrollment throws
     # an exception, we throw that exception up the stack so we can
     # attempt to retry order processing.
-    enroll_in_course(sku, email)
+    course_id = lookup_course_id(sku)
+    enroll_in_course(course_id, email)
 
     # Mark the item as processed
     order_item.finish_processing()

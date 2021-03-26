@@ -168,6 +168,33 @@ detail, here’s how:
    configuration).
 
 
+## I can’t use course IDs as SKUs. What do I do?
+
+Sometimes, configuring products with SKUs that match Open edX course
+IDs is not an option, or undesirable. For example, your Open edX
+platform may have several consecutive course runs that from a
+commercial perspective are all one and the same product. Or your
+selling platform might mandate a particular format for SKUs.
+
+In this case, you can use the [Django `redirects`
+app](https://docs.djangoproject.com/en/2.2/ref/contrib/redirects/) to
+help the webhook receiver find the correct course ID. For example, you
+might define https://my.lms.domain/sku/xyz123 to redirect to
+https://my.lms.domain/courses/course-v1:org+course+run/.
+
+What the webhook receiver will then do, if it detects a SKU that does
+not start with `course-v1:`, is send an HTTP `HEAD` request (with
+redirects enabled), to https://my.lms.domain/$prefix$sku (where
+`$prefix` is configurable, via `settings.WEBHOOK_RECEIVER_SKU_PREFIX`),
+and extract the course ID from the location it is being redirected to.
+
+The `redirects` app is enabled on a typical edX platform
+configuration, so it comes in handy for this purpose. However, in
+principle you do not _need_ to use it for looking up a course ID from
+a SKU. You could also write the redirect (or even a proxy rule) into
+your nginx configuration, or handle it at the load balancer level if
+your platform uses one.
+
 ## License
 
 This app is licensed under the Affero GPL; see [`LICENSE`](LICENSE) for
