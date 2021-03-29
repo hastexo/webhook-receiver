@@ -144,9 +144,12 @@ CACHES = {
                          default="dummycache://"),
 }
 
+WEBHOOK_RECEIVER_EDX_URL_ROOT = env.str(
+    'DJANGO_WEBHOOK_RECEIVER_EDX_URL_ROOT',
+    default='http://localhost:18000')
 WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT = env.str(
     'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT',
-    default='http://localhost:18000')
+    default=WEBHOOK_RECEIVER_EDX_URL_ROOT)
 WEBHOOK_RECEIVER_EDX_OAUTH2_KEY = env.str(
     'DJANGO_WEBHOOK_RECEIVER_EDX_OAUTH2_KEY',
     default='')

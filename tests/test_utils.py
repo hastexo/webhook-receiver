@@ -58,9 +58,9 @@ class SKULookupTest(TestCase):
         we return that course ID correctly?"""
         sku = 'course001'
         course_id = 'course-v1:org+course+run1'
-        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,
+        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,
                                 sku)
-        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,  # noqa: E501
+        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,  # noqa: E501
                                              course_id)
 
         with requests_mock.Mocker() as m:
@@ -78,9 +78,9 @@ class SKULookupTest(TestCase):
         URL, do we throw an HTTPError?"""
         sku = 'course001'
         course_id = 'course-v1:org+course+run1'
-        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,
+        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,
                                 sku)
-        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,  # noqa: E501
+        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,  # noqa: E501
                                              course_id)
 
         with requests_mock.Mocker() as m:
@@ -101,9 +101,9 @@ class SKULookupTest(TestCase):
         """
         sku = 'course001'
         course_id = 'somebrokencourseid'
-        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,
+        lookup_url = '%s/%s' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,
                                 sku)
-        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,  # noqa: E501
+        found_url = '%s/courses/%s/about' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,  # noqa: E501
                                              course_id)
 
         with requests_mock.Mocker() as m:
