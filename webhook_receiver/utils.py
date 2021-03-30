@@ -98,7 +98,7 @@ def lookup_course_id(sku):
 
     # OK, the SKU does not look like a course ID. So, expect to be
     # able to look up the actual course ID via an HTTP redirect.
-    lookup_url = '%s/%s%s' % (settings.WEBHOOK_RECEIVER_EDX_URL_ROOT,
+    lookup_url = '%s/%s%s' % (settings.WEBHOOK_RECEIVER_LMS_BASE_URL,
                               settings.WEBHOOK_RECEIVER_SKU_PREFIX,
                               sku)
     logger.debug('Resolving SKU %s by looking up %s.' % (sku, lookup_url))
@@ -143,12 +143,12 @@ def enroll_in_course(course_id,
     validate_email(email)
 
     client = OAuthAPIClient(
-        settings.WEBHOOK_RECEIVER_EDX_OAUTH2_URL_ROOT,
+        settings.WEBHOOK_RECEIVER_LMS_BASE_URL,
         settings.WEBHOOK_RECEIVER_EDX_OAUTH2_KEY,
         settings.WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET,
     )
 
-    bulk_enroll_url = EDX_BULK_ENROLLMENT_API_PATH % settings.WEBHOOK_RECEIVER_EDX_URL_ROOT  # noqa: E501
+    bulk_enroll_url = EDX_BULK_ENROLLMENT_API_PATH % settings.WEBHOOK_RECEIVER_LMS_BASE_URL  # noqa: E501
 
     # The bulk enrollment API allows us to enroll multiple identifiers
     # at once, using a comma-separated list for the courses and
