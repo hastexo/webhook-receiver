@@ -1,3 +1,4 @@
 django-fsm
 django-environ
 django-ipware
+python-dotenv
