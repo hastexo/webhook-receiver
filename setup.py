@@ -44,8 +44,8 @@ setup(
     entry_points={
         'lms.djangoapp': [
             'webhook_receiver = webhook_receiver.apps:WebhookReceiverConfig',
-            'webhook_receiver_shopify = webhook_receiver_shopify.apps:WebhookReceiverShopifyConfig',
-            'webhook_receiver_woocommerce = webhook_receiver_woocommerce.apps:WebhookReceiverWoocommerceConfig',
+            'webhook_receiver_shopify = webhook_receiver_shopify.apps:WebhookReceiverShopifyConfig',  # NOQA
+            'webhook_receiver_woocommerce = webhook_receiver_woocommerce.apps:WebhookReceiverWoocommerceConfig',  # NOQA
         ]
     }
 )

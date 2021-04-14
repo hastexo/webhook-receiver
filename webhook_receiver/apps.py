@@ -7,8 +7,9 @@ from django.apps import AppConfig
 
 class WebhookReceiverConfig(AppConfig):
     """
-    Configuration for the webhook receiver integration as an edX Django Plugin App.
-    Django Plugin App configuration to be able to use the module as a standalone edX Plugin App.
+    Configuration for the webhook receiver integration as an edX Django
+    Plugin App. Django Plugin App configuration to be able to use the module
+    as a standalone edX Plugin App.
     """
 
     name = "webhook_receiver"

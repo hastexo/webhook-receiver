@@ -23,7 +23,7 @@ def get_setting(settings, setting_key, default_val=None):
 
     setting_val = os.environ.get(setting_key, default_val)
 
-    if hasattr(settings, "ENV_TOKENS"):
+    if hasattr(settings, 'ENV_TOKENS'):
         return settings.ENV_TOKENS.get(setting_key, setting_val)
 
     return setting_val
@@ -33,8 +33,8 @@ def plugin_settings(settings):
     """
     Specifies django environment settings
 
-    Extend django settings with the plugin defined ones to be able to configure
-    the plugin individually.
+    Extend django settings with the plugin defined ones to be able to
+    configure the plugin individually.
 
     Arguments:
         settings (dict): Django settings
@@ -66,11 +66,23 @@ def plugin_settings(settings):
 
     settings.WEBHOOK_RECEIVER_SETTINGS = {
         'shopify': {
-            'shop_domain': get_setting(settings, 'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN'),
-            'api_key': get_setting(settings, 'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY'),
+            'shop_domain': get_setting(
+                settings,
+                'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN'
+            ),
+            'api_key': get_setting(
+                settings,
+                'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY'
+            ),
         },
         'woocommerce': {
-            'source': get_setting(settings, "WEBHOOK_RECEIVER_WOOCOMMERCE_SOURCE"),
-            'secret': get_setting(settings, 'WEBHOOK_RECEIVER_WOOCOMMERCE_SECRET'),
+            'source': get_setting(
+                settings,
+                'WEBHOOK_RECEIVER_WOOCOMMERCE_SOURCE'
+            ),
+            'secret': get_setting(
+                settings,
+                'WEBHOOK_RECEIVER_WOOCOMMERCE_SECRET'
+            ),
         },
     }
