@@ -43,20 +43,34 @@ def plugin_settings(settings):
         None
     """
 
-    settings.WEBHOOK_RECEIVER_LMS_BASE_URL = get_setting('LMS_BASE', default_val='http://localhost:18000')
+    settings.WEBHOOK_RECEIVER_LMS_BASE_URL = get_setting(
+        settings,
+        'LMS_BASE',
+        default_val='http://localhost:18000'
+    )
 
-    settings.WEBHOOK_RECEIVER_EDX_OAUTH2_KEY = get_setting('WEBHOOK_RECEIVER_EDX_OAUTH2_KEY')
-    settings.WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET = get_setting('WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET')
+    settings.WEBHOOK_RECEIVER_EDX_OAUTH2_KEY = get_setting(
+        settings,
+        'WEBHOOK_RECEIVER_EDX_OAUTH2_KEY'
+    )
 
-    settings.WEBHOOK_RECEIVER_SKU_PREFIX = get_setting('WEBHOOK_RECEIVER_SKU_PREFIX')
+    settings.WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET = get_setting(
+        settings,
+        'WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET'
+    )
+
+    settings.WEBHOOK_RECEIVER_SKU_PREFIX = get_setting(
+        settings,
+        'WEBHOOK_RECEIVER_SKU_PREFIX'
+    )
 
     settings.WEBHOOK_RECEIVER_SETTINGS = {
         'shopify': {
-            'shop_domain': get_setting('WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN'),
-            'api_key': get_setting('WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY'),
+            'shop_domain': get_setting(settings, 'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_SHOP_DOMAIN'),
+            'api_key': get_setting(settings, 'WEBHOOK_RECEIVER_SETTINGS_SHOPIFY_API_KEY'),
         },
         'woocommerce': {
             'source': get_setting(settings, "WEBHOOK_RECEIVER_WOOCOMMERCE_SOURCE"),
-            'secret': get_setting('WEBHOOK_RECEIVER_WOOCOMMERCE_SECRET'),
+            'secret': get_setting(settings, 'WEBHOOK_RECEIVER_WOOCOMMERCE_SECRET'),
         },
     }
