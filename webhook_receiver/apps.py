@@ -11,7 +11,7 @@ class WebhookReceiverConfig(AppConfig):
     Django Plugin App configuration to be able to use the module as a standalone edX Plugin App.
     """
 
-    name = "edx_webhooks"
+    name = "webhook_receiver"
     plugin_app = {
         "url_config": {
             "lms.djangoapp": {
