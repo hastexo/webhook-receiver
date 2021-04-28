@@ -158,6 +158,11 @@ WEBHOOK_RECEIVER_SKU_PREFIX = env.str(
     'DJANGO_WEBHOOK_RECEIVER_SKU_PREFIX',
     default='')
 
+WEBHOOK_RECEIVER_AUTO_ENROLL = env.bool(
+    'DJANGO_WEBHOOK_RECEIVER_AUTO_ENROLL',
+    default=True
+)
+
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
         'shop_domain': env.str(
