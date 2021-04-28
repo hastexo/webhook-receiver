@@ -163,6 +163,11 @@ WEBHOOK_RECEIVER_AUTO_ENROLL = env.bool(
     default=True
 )
 
+WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL = env.bool(
+    'DJANGO_WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL',
+    default=True
+)
+
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
         'shop_domain': env.str(

@@ -130,10 +130,12 @@ def lookup_course_id(sku):
                              'matching SKU %s' % sku)
 
 
-def enroll_in_course(course_id,
-                     email,
-                     send_email=True,
-                     auto_enroll=settings.WEBHOOK_RECEIVER_AUTO_ENROLL):
+def enroll_in_course(
+        course_id,
+        email,
+        send_email=settings.WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL,
+        auto_enroll=settings.WEBHOOK_RECEIVER_AUTO_ENROLL
+):
     """
     Auto-enroll email in course.
 
