@@ -8,12 +8,12 @@ from setuptools import find_packages, setup
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='edx-webhooks',
+    name='webhook-receiver',
     use_scm_version=True,
     description='edX Webhooks: a webhook processor interfacing with Open edX',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/hastexo/edx-webhooks',
+    url='https://github.com/hastexo/webhook-receiver',
     author='hastexo',
     author_email='pypi@hastexo.com',
     license='AGPL-3.0',
