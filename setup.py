@@ -37,6 +37,6 @@ setup(
         'edx-rest-api-client>=1.9.2',
     ],
     setup_requires=[
-        'setuptools-scm<6',
+        'setuptools_scm<6',
     ],
 )
