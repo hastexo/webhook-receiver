@@ -35,7 +35,6 @@ setup(
         'django-celery>=3.2.1',
         'django_fsm',
         'edx-rest-api-client>=1.9.2',
-        'edx-auth-backends>=2.0.2',
     ],
     setup_requires=[
         'setuptools-scm<6',
