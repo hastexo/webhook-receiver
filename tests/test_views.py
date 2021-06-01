@@ -191,6 +191,22 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
         response = self.client.get('/webhooks/woocommerce/order/create')
         self.assertEqual(response.status_code, 405)
 
+    def test_invalid_content_type(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    content_type='multipart/form-data')
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_x_www_form_urlencoded(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    content_type='application/x-www-form-urlencoded')  # noqa: E501
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_x_www_form_urlencoded(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    'webhook_id=1',
+                                    content_type='application/x-www-form-urlencoded')  # noqa: E501
+        self.assertEqual(response.status_code, 200)
+
     def test_missing_hmac_header(self):
         response = self.client.post('/webhooks/woocommerce/order/create',
                                     self.raw_payload,

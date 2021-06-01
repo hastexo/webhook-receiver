@@ -23,6 +23,39 @@ def order_create(request):
     # Load configuration
     conf = settings.WEBHOOK_RECEIVER_SETTINGS['woocommerce']
 
+    # When WooCommerce web hooks are first created or enabled,
+    # WooCommerce sends a POST request that is not JSON, but instead
+    # application/x-www-form-urlencoded with a single form value:
+    # "webhook_id=<num>". If we receive that, we return OK
+    # immediately. Any other non-JSON content is unexpected, and we
+    # send a Bad Request response.
+    content_type = request.content_type
+    if content_type != 'application/json':
+        remote_host = request.get_host()
+        user_agent = request.headers.get('user-agent')
+        if content_type == 'application/x-www-form-urlencoded':
+            try:
+                webhook_id = request.POST['webhook_id']
+                logger.info('Webhook with webhook_id %s created or '
+                            'enabled from %s (%s)' % (webhook_id,
+                                                      remote_host,
+                                                      user_agent))
+                return HttpResponse(status=200)
+            except KeyError:
+                logger.warn('Received application/x-www-form-urlencoded '
+                            'request without a webhook_id parameter '
+                            'from %s (%s)' % (remote_host, user_agent))
+                return HttpResponse(status=400)
+        else:
+            logger.warn('Received request with unexpected '
+                        'content type %s '
+                        'from %s (%s)' % (content_type,
+                                          remote_host,
+                                          user_agent))
+            return HttpResponse(status=400)
+
+    # Here, we're sure that what we got is JSON, so let's start
+    # processing it.
     try:
         data = receive_json_webhook(request)
     except Exception:
