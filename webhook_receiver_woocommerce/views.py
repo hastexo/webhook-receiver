@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import logging
 
+from dateutil.parser import parse as parse_date
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -19,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @require_POST
-def order_create(request):
+def order_create_or_update(request):
     # Load configuration
     conf = settings.WEBHOOK_RECEIVER_SETTINGS['woocommerce']
 
@@ -87,7 +89,29 @@ def order_create(request):
         fail_and_save(data)
         return HttpResponse(status=403)
 
+    # OK, we have valid, signed, JSON data. Put that into the
+    # database, so we have a record of the transaction.
     finish_and_save(data)
+
+    # If we require that an order be paid before we can process it,
+    # and it isn't, bail here and wait for the order to be
+    # subsequently updated.
+    require_payment = conf.get('require_payment', False)
+    if require_payment:
+        date_paid_gmt = data.content.get('date_paid_gmt')
+        if date_paid_gmt:
+            try:
+                parse_date(date_paid_gmt)
+            except ValueError:
+                logger.error('Webhook payload %s contains '
+                             'invalid value for '
+                             'date_paid_gmt: %s' % (data.id,
+                                                    date_paid_gmt))
+        else:
+            logger.warn('Webhook payload %s contains '
+                        'empty value for '
+                        'date_paid_gmt' % data.id)
+            return HttpResponse(status=402)
 
     # Record order
     order, created = record_order(data)

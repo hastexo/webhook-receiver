@@ -14,6 +14,9 @@ It currently provides the following endpoints:
   data, as it would be received by a [WooCommerce
   webhook](https://docs.woocommerce.com/document/webhooks/) firing.
 
+* `webhooks/woocommerce/order/update` behaves identically as
+  `webhooks/woocommerce/order/create`, for reasons outlined below.
+
 When the webhook is configured properly on the sender side (see
 "Webhook Sender Configuration Requirements", below), students will be
 enrolled in the appropriate courses as soon as an order is
@@ -139,6 +142,13 @@ address this, you have two options:
    `WEBHOOK_RECEIVER_ENABLE_NGINX_INCLUDE` variable to `true` to
    enable this functionality.
 
+If your WooCommerce is set up such that payment for course enrollments
+is always via a credit card or voucher, you may want to activate
+course enrollments only on payment. To do so, configure your
+WooCommerce webhook to fire on the `order.updated` (not
+`order.created`) event, and set the `require_payment` configuration
+option to `true`.
+
 
 ## Technical background
 
@@ -154,7 +164,10 @@ detail, here’s how:
    payload. If we deem any of them malformed, we return HTTP 400
    (Bad Request); if we consider them well-formed but invalid (such
    as, coming from the wrong source or not having a correct
-   signature), we return HTTP 403 (Forbidden).
+   signature), we return HTTP 403 (Forbidden). If we consider the
+   payload valid but it does not include payment information (and
+   we’ve been configured to look for it), we return HTTP 402 (Payment
+   Required).
 
 3. If we’re able to verify the incoming payload, we return HTTP 200
    (OK), create an asynchronous processing task for Celery, and this
