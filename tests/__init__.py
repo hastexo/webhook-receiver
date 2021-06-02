@@ -57,3 +57,11 @@ class ShopifyTestCase(WebhookTestCase):
 
 class WooCommerceTestCase(WebhookTestCase):
     PAYLOAD_FILENAME = 'woocommerce.json'
+
+
+class WooCommercePaidTestCase(WebhookTestCase):
+    PAYLOAD_FILENAME = 'woocommerce-paid.json'
+
+
+class WooCommerceUnpaidTestCase(WebhookTestCase):
+    PAYLOAD_FILENAME = 'woocommerce-unpaid.json'

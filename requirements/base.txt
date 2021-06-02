@@ -1,4 +1,5 @@
 django-fsm
 django-environ
 django-ipware
+python-dateutil
 python-dotenv

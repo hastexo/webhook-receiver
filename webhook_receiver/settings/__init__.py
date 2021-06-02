@@ -91,15 +91,20 @@ LOGGING = {
             'formatter': 'syslog_format',
             'facility': SysLogHandler.LOG_LOCAL0,
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': False,
             'level': 'INFO'
         },
         'requests': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
@@ -109,7 +114,7 @@ LOGGING = {
             'level': 'WARNING'
         },
         'django.request': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
