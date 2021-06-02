@@ -10,7 +10,7 @@ from django.test import Client
 
 import requests_mock
 
-from . import ShopifyTestCase, WooCommerceTestCase
+from . import ShopifyTestCase, WooCommerceTestCase, WooCommerceUnpaidTestCase
 
 
 class ShopifyTestOrderCreation(ShopifyTestCase):
@@ -154,6 +154,8 @@ class ShopifyTestOrderCreation(ShopifyTestCase):
 
 class WooCommerceTestOrderCreation(WooCommerceTestCase):
 
+    TEST_VALID_ORDER_EXPECTED_STATUS_CODE = 200
+
     def setUp(self):
         self.setup_payload()
         self.setup_requests()
@@ -190,6 +192,22 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
     def test_invalid_method_get(self):
         response = self.client.get('/webhooks/woocommerce/order/create')
         self.assertEqual(response.status_code, 405)
+
+    def test_invalid_content_type(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    content_type='multipart/form-data')
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_x_www_form_urlencoded(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    content_type='application/x-www-form-urlencoded')  # noqa: E501
+        self.assertEqual(response.status_code, 400)
+
+    def test_valid_x_www_form_urlencoded(self):
+        response = self.client.post('/webhooks/woocommerce/order/create',
+                                    'webhook_id=1',
+                                    content_type='application/x-www-form-urlencoded')  # noqa: E501
+        self.assertEqual(response.status_code, 200)
 
     def test_missing_hmac_header(self):
         response = self.client.post('/webhooks/woocommerce/order/create',
@@ -281,7 +299,8 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
                                         content_type='application/json',
                                         HTTP_X_WC_WEBHOOK_SIGNATURE=self.correct_signature,  # noqa: E501
                                         HTTP_X_WC_WEBHOOK_SOURCE='https://example.com')  # noqa: E501
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code,
+                             self.TEST_VALID_ORDER_EXPECTED_STATUS_CODE)
 
     def test_valid_order_again(self):
         """Re-inject a previously processed order, so we can check
@@ -289,3 +308,9 @@ class WooCommerceTestOrderCreation(WooCommerceTestCase):
 
         self.test_valid_order()
         self.test_valid_order()
+
+
+class WooCommerceTestOrderUpdate(WooCommerceUnpaidTestCase,
+                                 WooCommerceTestOrderCreation):
+
+    TEST_VALID_ORDER_EXPECTED_STATUS_CODE = 402

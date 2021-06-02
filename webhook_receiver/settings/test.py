@@ -10,6 +10,7 @@ WEBHOOK_RECEIVER_SETTINGS = {
     'woocommerce': {
         'source': 'https://example.com',
         'secret': 'secret',
+        'require_payment': True,
     },
 }
 

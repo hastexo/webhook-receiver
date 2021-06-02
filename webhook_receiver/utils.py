@@ -130,9 +130,12 @@ def lookup_course_id(sku):
                              'matching SKU %s' % sku)
 
 
-def enroll_in_course(course_id,
-                     email,
-                     send_email=True):
+def enroll_in_course(
+        course_id,
+        email,
+        send_email=settings.WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL,
+        auto_enroll=settings.WEBHOOK_RECEIVER_AUTO_ENROLL
+):
     """
     Auto-enroll email in course.
 
@@ -156,7 +159,7 @@ def enroll_in_course(course_id,
     # enrollments one by one, so we use a single request for each
     # course/identifier combination.
     request_params = {
-        "auto_enroll": True,
+        "auto_enroll": auto_enroll,
         "email_students": send_email,
         "action": "enroll",
         "courses": course_id,

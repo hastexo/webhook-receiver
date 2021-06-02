@@ -91,15 +91,20 @@ LOGGING = {
             'formatter': 'syslog_format',
             'facility': SysLogHandler.LOG_LOCAL0,
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': False,
             'level': 'INFO'
         },
         'requests': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
@@ -109,7 +114,7 @@ LOGGING = {
             'level': 'WARNING'
         },
         'django.request': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console', 'local', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
@@ -157,6 +162,16 @@ WEBHOOK_RECEIVER_EDX_OAUTH2_SECRET = env.str(
 WEBHOOK_RECEIVER_SKU_PREFIX = env.str(
     'DJANGO_WEBHOOK_RECEIVER_SKU_PREFIX',
     default='')
+
+WEBHOOK_RECEIVER_AUTO_ENROLL = env.bool(
+    'DJANGO_WEBHOOK_RECEIVER_AUTO_ENROLL',
+    default=True
+)
+
+WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL = env.bool(
+    'DJANGO_WEBHOOK_RECEIVER_SEND_ENROLLMENT_EMAIL',
+    default=True
+)
 
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
