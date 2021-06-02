@@ -77,6 +77,11 @@ LOGGING = {
         },
         'syslog_format': {'format': syslog_format},
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'handlers': {
         'console': {
             'level': 'INFO',
