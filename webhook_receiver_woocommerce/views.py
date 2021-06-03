@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from ipware import get_client_ip
+
 from webhook_receiver.utils import receive_json_webhook, hmac_is_valid
 from webhook_receiver.utils import fail_and_save, finish_and_save
 from .utils import record_order
@@ -33,7 +35,7 @@ def order_create_or_update(request):
     # send a Bad Request response.
     content_type = request.content_type
     if content_type != 'application/json':
-        remote_host = request.get_host()
+        remote_host, is_routable = get_client_ip(request)
         user_agent = request.headers.get('user-agent')
         if content_type == 'application/x-www-form-urlencoded':
             try:
