@@ -1,0 +1,4 @@
+---
+deprecations:
+  - |
+    Dropped support for Open edX Juniper (and Python 3.5) from the main branch.
