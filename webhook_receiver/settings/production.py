@@ -1,5 +1,3 @@
-import os
-
 from yaml import load, SafeLoader
 from yaml.scanner import ScannerError
 
@@ -30,20 +28,20 @@ if CONFIG_FILE:
 # The "make migrate" ("manage.py migrate") functionality needs to
 # honour the DB_MIGRATION_ environment variables.
 DB_OVERRIDES = dict(
-    PASSWORD=os.environ.get('DB_MIGRATION_PASS',
-                            DATABASES['default']['PASSWORD']),  # noqa: F405
-    ENGINE=os.environ.get('DB_MIGRATION_ENGINE',
-                          DATABASES['default']['ENGINE']),  # noqa: F405
-    USER=os.environ.get('DB_MIGRATION_USER',
-                        DATABASES['default']['USER']),  # noqa: F405
-    NAME=os.environ.get('DB_MIGRATION_NAME',
-                        DATABASES['default']['NAME']),  # noqa: F405
-    HOST=os.environ.get('DB_MIGRATION_HOST',
-                        DATABASES['default']['HOST']),  # noqa: F405
-    PORT=os.environ.get('DB_MIGRATION_PORT',
-                        DATABASES['default']['PORT']),  # noqa: F405
-    OPTIONS=os.environ.get('DB_MIGRATION_OPTIONS',
-                           DATABASES['default']['OPTIONS']),  # noqa: F405
+    PASSWORD=env.str('DB_MIGRATION_PASS',  # noqa: F405
+                     default=DATABASES['default']['PASSWORD']),  # noqa: F405
+    ENGINE=env.str('DB_MIGRATION_ENGINE',  # noqa: F405
+                   default=DATABASES['default']['ENGINE']),  # noqa: F405
+    USER=env.str('DB_MIGRATION_USER',  # noqa: F405
+                 default=DATABASES['default']['USER']),  # noqa: F405
+    NAME=env.str('DB_MIGRATION_NAME',  # noqa: F405
+                 default=DATABASES['default']['NAME']),  # noqa: F405
+    HOST=env.str('DB_MIGRATION_HOST',  # noqa: F405
+                 default=DATABASES['default']['HOST']),  # noqa: F405
+    PORT=env.str('DB_MIGRATION_PORT',  # noqa: F405
+                 default=DATABASES['default']['PORT']),  # noqa: F405
+    OPTIONS=env.json('DB_MIGRATION_OPTIONS',  # noqa: F405
+                     default=DATABASES['default']['OPTIONS']),  # noqa: F405
 )
 for override, value in DB_OVERRIDES.items():
     DATABASES['default'][override] = value  # noqa: F405

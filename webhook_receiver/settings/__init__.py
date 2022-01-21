@@ -5,6 +5,7 @@ import platform
 
 from dotenv import load_dotenv
 from logging.handlers import SysLogHandler
+from django.core.exceptions import ImproperlyConfigured
 
 # Populate os.environ with variables from .env (if it exists)
 load_dotenv(verbose=True)
@@ -144,9 +145,22 @@ CELERY_BROKER_URL = env.str('DJANGO_CELERY_BROKER_URL', default="")
 CELERY_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
 CELERY_TASK_ALWAYS_EAGER = not bool(CELERY_BROKER_URL)
 
+default_db = env.db(
+    'DJANGO_DATABASE_URL',
+    default='sqlite:///:memory:'
+)
+
+if not default_db:
+    # env.db() returns an empty dictionary if DJANGO_DATABASE_URL is
+    # set to an empty string. This will break when we want to override
+    # default database configuration parameters for production.
+    raise ImproperlyConfigured(
+        'DJANGO_DATABASE_URL was set to an empty string. Provide a '
+        'valid URL or unset DJANGO_DATABASE_URL to use the default.'
+    )
+
 DATABASES = {
-    'default': env.db('DJANGO_DATABASE_URL',
-                      default="sqlite://:memory:"),
+    'default': default_db,
 }
 
 CACHES = {
