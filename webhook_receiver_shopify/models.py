@@ -26,7 +26,7 @@ class ShopifyOrderItem(OrderItem):
         abstract = False
         constraints = [
             UniqueConstraint(fields=['order', 'sku', 'email'],
-                             name='unique_order_sku_email')
+                             name='unique_shopify_order_sku_email')
         ]
 
     order = ForeignKey(
