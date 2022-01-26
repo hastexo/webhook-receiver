@@ -3,7 +3,13 @@
 from django.db import migrations, models
 import django.utils.timezone
 import django_fsm
-import django_jsonfield_backport.models
+try:
+    # Django 3.1 and later has a built-in JSONField
+    from django.db.models import JSONField
+except ImportError:
+    # For earlier Django versions we must use JSONField from
+    # django-jsonfield-backport
+    from django_jsonfield_backport.models import JSONField
 
 
 class Migration(migrations.Migration):
@@ -21,9 +27,9 @@ class Migration(migrations.Migration):
                 ('status', django_fsm.FSMIntegerField(choices=[(0, 'New'), (1, 'Processing'), (2, 'Processed'), (-1, 'Error')], default=0, protected=True)),
                 ('source', models.GenericIPAddressField(null=True)),
                 ('received', models.DateTimeField(default=django.utils.timezone.now)),
-                ('headers', django_jsonfield_backport.models.JSONField()),
+                ('headers', JSONField()),
                 ('body', models.BinaryField()),
-                ('content', django_jsonfield_backport.models.JSONField(null=True)),
+                ('content', JSONField(null=True)),
             ],
             options={
                 'abstract': False,
