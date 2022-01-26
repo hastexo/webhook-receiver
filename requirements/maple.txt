@@ -1,0 +1,5 @@
+-r base.txt
+celery<4.5
+django<3.3
+edx-rest-api-client<5.5
+pyyaml<6.1

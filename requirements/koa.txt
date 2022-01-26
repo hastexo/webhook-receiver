@@ -1,6 +1,0 @@
--r base.txt
-celery<4.5
-django<2.3
-edx-rest-api-client<5.3
-pyyaml<5.4
-django-jsonfield-backport
