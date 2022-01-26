@@ -2,23 +2,12 @@ stages:
   - build
   - report
 
-py35:
-  image: python:3.5
-  stage: build
-  script:
-    - pip install tox
-    - tox -e py35-juniper,py35-latest,flake8
-  artifacts:
-    paths:
-      - .coverage*
-    expire_in: 5 minutes
-
 py38:
   image: python:3.8
   stage: build
   script:
     - pip install tox
-    - tox -e py38-juniper,py38-latest,flake8
+    - tox -e py38-lilac,py38-maple,flake8
   artifacts:
     paths:
       - .coverage*
