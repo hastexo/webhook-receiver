@@ -149,7 +149,6 @@ default_db = env.db(
     'DJANGO_DATABASE_URL',
     default='sqlite:///:memory:'
 )
-
 if not default_db:
     # env.db() returns an empty dictionary if DJANGO_DATABASE_URL is
     # set to an empty string. This will break when we want to override
@@ -158,7 +157,10 @@ if not default_db:
         'DJANGO_DATABASE_URL was set to an empty string. Provide a '
         'valid URL or unset DJANGO_DATABASE_URL to use the default.'
     )
-
+# If the database URL sets options via "?key=value" parameters, we
+# want to use them.  But if it doesn't, we still want to set OPTIONS
+# to an empty dictionary, which django-environ doesn't do by default.
+default_db.setdefault('OPTIONS', {})
 DATABASES = {
     'default': default_db,
 }
