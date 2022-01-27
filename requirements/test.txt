@@ -1,4 +1,3 @@
-mock
 coverage
 django-webtest
 requests-mock
