@@ -5,8 +5,11 @@ stages:
 py38:
   image: python:3.8
   stage: build
+  variables:
+    TOX_PIP_VERSION: '20.2.4'
+  before_script:
+    - pip install tox tox-pip-version
   script:
-    - pip install tox
     - tox -e py38-lilac,py38-maple,flake8
   artifacts:
     paths:
