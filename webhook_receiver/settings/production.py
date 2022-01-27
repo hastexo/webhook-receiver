@@ -40,8 +40,9 @@ DB_OVERRIDES = dict(
                  default=DATABASES['default']['HOST']),  # noqa: F405
     PORT=env.str('DB_MIGRATION_PORT',  # noqa: F405
                  default=DATABASES['default']['PORT']),  # noqa: F405
-    OPTIONS=env.json('DB_MIGRATION_OPTIONS',  # noqa: F405
-                     default=DATABASES['default']['OPTIONS']),  # noqa: F405
+    OPTIONS=env.json(  # noqa: F405
+        'DB_MIGRATION_OPTIONS',
+        default=DATABASES['default'].get('OPTIONS', {})),  # noqa: F405
 )
 for override, value in DB_OVERRIDES.items():
     DATABASES['default'][override] = value  # noqa: F405
