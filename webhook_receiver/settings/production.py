@@ -35,7 +35,6 @@ DB_OVERRIDES = dict(
     HOST=env.str('DB_MIGRATION_HOST', default=None),  # noqa: F405
     PORT=env.str('DB_MIGRATION_PORT', default=None),  # noqa: F405
     OPTIONS=env.json('DB_MIGRATION_OPTIONS', default=None),  # noqa: F405
-
 )
 for override, value in DB_OVERRIDES.items():
     if value:
