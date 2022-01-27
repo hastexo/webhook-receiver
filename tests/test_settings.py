@@ -1,8 +1,17 @@
+import os
+
 from importlib import reload
 from django.test import SimpleTestCase
+from unittest.mock import patch
 
 from webhook_receiver import settings as default_settings
 from webhook_receiver.settings import production as production_settings
+
+
+def mockenv(**envars):
+    """A mock.patch decorator (or context manager) that injects
+    custom values into os.environ"""
+    return patch.dict(os.environ, envars)
 
 
 class DefaultSettingsTest(SimpleTestCase):
@@ -52,3 +61,31 @@ class ProductionSettingsTest(DefaultSettingsTest):
                     'PASSWORD', 'OPTIONS']:
             if db_overrides[key]:
                 self.assertEqual(default_db[key], db_overrides[key])
+
+
+class ProductionSettingsWithOverrideTest(ProductionSettingsTest):
+    """Tests for production settings with DB_MIGRATION_* overrides."""
+
+    @mockenv(DB_MIGRATION_HOST='migrationhost',
+             DB_MIGRATION_PASS='migrationpass',
+             DB_MIGRATION_USER='migrationuser',
+             DB_MIGRATION_NAME='migration',
+             DB_MIGRATION_PORT='3306',
+             DB_MIGRATION_ENGINE='django.db.backends.mysql',
+             DB_MIGRATION_OPTIONS='{"foo": "bar"}')
+    def test_default_db_settings(self):
+        # We need to reload the settings here again. Mock patch
+        # decorators will only patch test_ methods, so we can't do
+        # this in setUp().
+        self.settings = reload(production_settings)
+        default_db = self.settings.DATABASES['default']
+        self.assertEqual(default_db['HOST'], 'migrationhost')
+        self.assertEqual(default_db['PORT'], '3306')
+        self.assertEqual(
+            default_db['ENGINE'],
+            'django.db.backends.mysql'
+        )
+        self.assertEqual(default_db['NAME'], 'migration')
+        self.assertEqual(default_db['USER'], 'migrationuser')
+        self.assertEqual(default_db['PASSWORD'], 'migrationpass')
+        self.assertDictEqual(default_db['OPTIONS'], {'foo': 'bar'})
