@@ -105,32 +105,37 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'local', 'mail_admins'],
+            'handlers': ['console', 'mail_admins'],
             'propagate': False,
             'level': 'INFO'
         },
         'requests': {
-            'handlers': ['console', 'local', 'mail_admins'],
+            'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
         'factory': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console'],
             'propagate': True,
             'level': 'WARNING'
         },
         'django.request': {
-            'handlers': ['console', 'local', 'mail_admins'],
+            'handlers': ['console', 'mail_admins'],
             'propagate': True,
             'level': 'WARNING'
         },
         '': {
-            'handlers': ['console', 'local'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False
         },
     }
 }
+
+enable_syslog = env.bool('DJANGO_ENABLE_SYSLOG', default=False)
+if enable_syslog:
+    for logger_config in LOGGING['loggers'].values():
+        logger_config['handlers'].append('local')
 
 # We populate ALLOWED_HOSTS from a comma-separated list. Running with
 # DEBUG = True overrides this, and is equivalent to setting the
