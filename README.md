@@ -44,7 +44,7 @@ E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-r
   double-check that your installation follows the default.
 
 Once the bulk enrollment view is enabled, you can try accessing it via
-`https://your.openedx.domain/api/bulk_enroll/v1/bulk_enroll/`. If the
+`https://your.openedx.domain/api/bulk_enroll/v1/bulk_enroll`. If the
 view is properly enabled, Open edX will respond with an HTTP status
 code of 401 (Unauthorized) rather than 404 (Not Found).
 
