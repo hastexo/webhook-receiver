@@ -43,7 +43,7 @@ class WebhookTestCase(TestCase):
 
     def setup_requests(self):
         self.token_uri = '%s/oauth2/access_token' % settings.WEBHOOK_RECEIVER_LMS_BASE_URL  # noqa: E501
-        self.enroll_uri = '%s/api/bulk_enroll/v1/bulk_enroll/' % settings.WEBHOOK_RECEIVER_LMS_BASE_URL  # noqa: E501
+        self.enroll_uri = '%s/api/bulk_enroll/v1/bulk_enroll' % settings.WEBHOOK_RECEIVER_LMS_BASE_URL  # noqa: E501
 
         self.token_response = {
             'access_token': 'foobar',

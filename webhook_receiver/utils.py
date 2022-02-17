@@ -18,7 +18,7 @@ from ipware import get_client_ip
 from .models import JSONWebhookData
 
 
-EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll/'
+EDX_BULK_ENROLLMENT_API_PATH = '%s/api/bulk_enroll/v1/bulk_enroll'
 
 logger = logging.getLogger(__name__)
 
