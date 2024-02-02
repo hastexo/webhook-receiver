@@ -215,5 +215,8 @@ WEBHOOK_RECEIVER_SETTINGS = {
         'secret': env.str(
             'DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_SECRET',
             default=''),
+        'require_payment': env.bool(
+            'DJANGO_WEBHOOK_RECEIVER_SETTINGS_WOOCOMMERCE_REQUIRE_PAYMENT',
+            default=False),
     },
 }
