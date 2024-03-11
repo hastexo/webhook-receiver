@@ -76,25 +76,33 @@ def process_line_item(order, item):
 
     # Fetch the participant email address from the line item meta
     # data. meta_data is very quirky: it's a list of lists, with zero
-    # or one nested list, which if it exists, contains exactly one
-    # dictionary.
+    # or one nested list, which if it exists, contains either a
+    # dictionary, or a list, or a string.
     email = None
     for meta in [m['value'] for m in item['meta_data']]:
         try:
             # If meta is itself not a list, this throws IndexError
             # which we catch.
             meta_item = meta[0]
-            # If the item is not a dictionary, this throws TypeError
-            # which we throw up the stack. If the item is expectedly a
+            # If the item is not a dictionary, this throws TypeError,
+            # which we catch. If the item is expectedly a
             # dictionary but does not have a 'type' key, this throws
             # KeyError instead, which we catch.
             if meta_item['type'] == 'email':
                 # OK, we've found a learner email address, let's use
                 # that.
                 email = meta_item['_value']
+                logger.debug('Email address for order %i, SKU %s: "%s"',
+                             order.id,
+                             sku,
+                             email)
                 break
-        except (IndexError, KeyError):
-            pass
+        except (IndexError, KeyError, TypeError):
+            logger.debug('Unknown metadata in order %i, SKU %s: "%s". '
+                         'Ignoring.',
+                         order.id,
+                         sku,
+                         meta)
 
     # Store line item, prop
     order_item, created = OrderItem.objects.get_or_create(
