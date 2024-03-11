@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 
 from requests.exceptions import HTTPError
 
@@ -246,7 +247,7 @@ class ProcessLineItemTest(WooCommerceTestCase):
                 with self.assertRaises(HTTPError):
                     process_line_item(order, line_item)
 
-    def test_invalid_email(self):
+    def test_invalid_email_address(self):
         order = Order()
         order.id = 43
         order.save()
@@ -265,3 +266,27 @@ class ProcessLineItemTest(WooCommerceTestCase):
         for line_item in line_items:
             with self.assertRaises(ValidationError):
                 process_line_item(order, line_item)
+
+    def test_invalid_meta_data(self):
+        order = Order()
+        order.id = 44
+        order.save()
+        line_item = {
+            "sku": "course-v1:org+course+run1",
+            "meta_data": [{"id": 701,
+                           "value": ["this is a list",
+                                     "of strings",],
+                           },
+                          {"id": 702,
+                           "value": "This is just a string"}],
+        }
+
+        # Our metadata does not contain an email address, but instead
+        # some data that we silently ignore.
+        #
+        # Thus, parsing the metadata should complete without error,
+        # but once we attempt to insert the data into the database
+        # with OrderItem.objects.get_or_create(), we should fail with
+        # a violation of the NOT NULL constraint.
+        with self.assertRaises(IntegrityError):
+            process_line_item(order, line_item)
