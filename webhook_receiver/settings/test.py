@@ -2,6 +2,8 @@ from . import *  # noqa: F401, F403
 
 SECRET_KEY = 'not-so-secret pass phrase used for testing'
 
+ALLOWED_HOSTS = ['127.0.0.1', '::1']
+
 WEBHOOK_RECEIVER_SETTINGS = {
     'shopify': {
         'shop_domain': 'example.com',
