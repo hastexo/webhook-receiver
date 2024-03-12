@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Support the DJANGO_ALLOWED_HOSTS environment variable.
+    Set this to a comma-separated list of allowed host names.
+    Setting this is required from Django 4 forward.
