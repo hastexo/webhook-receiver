@@ -1,7 +1,7 @@
-# Open edX Webhook Receiver
+# Open edX Webhook Receiver
 
 This is a small Django app that listens for incoming webhooks, and
-then translates those into calls against the Open edX REST APIs.
+then translates those into calls against the Open edX REST APIs.
 
 It currently provides the following endpoints:
 
@@ -20,38 +20,38 @@ It currently provides the following endpoints:
 When the webhook is configured properly on the sender side (see
 "Webhook Sender Configuration Requirements", below), students will be
 enrolled in the appropriate courses as soon as an order is
-created. This requires that your Open edX installation runs with the
+created. This requires that your Open edX installation runs with the
 Bulk Enrollment View enabled.
 
 These webhooks are intended for organizations that already use Shopify
 or WooCommerce as their selling platform, and thus have no need or
-intention to deploy [Open edX
+intention to deploy [Open edX
 E-Commerce](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/ecommerce/).
 
 
-## Open edX Configuration Requirements
+## Open edX Configuration Requirements
 
 ### Bulk Enrollment View
 
 * You must enable the Bulk Enrollment view. This view is disabled in a
-  default Open edX configuration. To enable it, add
+  default Open edX configuration. To enable it, add
   `ENABLE_BULK_ENROLLMENT_VIEW: true` to your `lms.yml` configuration
   file, and restart the `lms` service via `supervisord`.
 
 * The Bulk Enrollment view also requires that you set
   `ENABLE_COMBINED_LOGIN_REGISTRATION: true`. Combined login
-  registration is enabled by default in Open edX, but you may want to
+  registration is enabled by default in Open edX, but you may want to
   double-check that your installation follows the default.
 
 Once the bulk enrollment view is enabled, you can try accessing it via
 `https://your.openedx.domain/api/bulk_enroll/v1/bulk_enroll`. If the
-view is properly enabled, Open edX will respond with an HTTP status
+view is properly enabled, Open edX will respond with an HTTP status
 code of 401 (Unauthorized) rather than 404 (Not Found).
 
-### edX OAuth2 Client
+### Open edX OAuth2 Client
 
 Next, you need to create an OAuth2 client so that the webhook
-service can communicate with Open edX.
+service can communicate with Open edX.
 
 1. In the Django admin interface
    (`https://your.openedx.domain/admin/`), open **Django OAuth
@@ -81,8 +81,8 @@ service can communicate with Open edX.
 
 ## Deployment
 
-The easiest way for platform administrators to deploy the edX Webhooks
-app and its dependencies to an Open edX installation is to deploy a
+The easiest way for platform administrators to deploy the Open edX Webhooks
+app and its dependencies to an Open edX installation is to deploy a
 minimal server that exposes the desired endpoint(s).
 
 A [Tutor plugin](https://github.com/hastexo/tutor-contrib-webhook-receiver)
@@ -126,13 +126,13 @@ An additional quirk that is specific to WooCommerce is that it will
 webhook](https://github.com/woocommerce/woocommerce/issues/9350) that
 listens on any port other than 80, 443, or 8080. This means that you
 will not be able to run a separate webhook receiver service on the
-same IP address as your Open edX LMS, on a nonstandard port. To
+same IP address as your Open edX LMS, on a nonstandard port. To
 address this, you have two options:
 
 1. Run the webhook receiver service on a dedicated IP address. This
    will also require a separate DNS entry, and either a dedicated
    TLS/SSL certificate, or the use of a wildcard certificate that you
-   share with the Open edX LMS.
+   share with the Open edX LMS.
 2. Mount the webhook receiver under your LMS URL, using an nginx
    `proxy_pass` directive. This enables you to receive webhooks on
    `https://your.lms.domain/webhooks`, and they will be redirected to
@@ -173,7 +173,7 @@ detail, here’s how:
    concludes synchronous request processing.
 
 4. The asynchronous Celery task then makes REST API calls against the
-   Open edX instance, invoking the Bulk Enrollment view to enroll
+   Open edX instance, invoking the Bulk Enrollment view to enroll
    learners in courses. If any REST API call results in an error,
    Celery will retry up to three times (using the standard retry delay
    of 3 minutes, unless you’re overriding this in your Celery
@@ -182,8 +182,8 @@ detail, here’s how:
 
 ## I can’t use course IDs as SKUs. What do I do?
 
-Sometimes, configuring products with SKUs that match Open edX course
-IDs is not an option, or undesirable. For example, your Open edX
+Sometimes, configuring products with SKUs that match Open edX course
+IDs is not an option, or undesirable. For example, your Open edX
 platform may have several consecutive course runs that from a
 commercial perspective are all one and the same product. Or your
 selling platform might mandate a particular format for SKUs.
