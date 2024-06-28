@@ -83,12 +83,11 @@ service can communicate with Open edX.
 
 The easiest way for platform administrators to deploy the edX Webhooks
 app and its dependencies to an Open edX installation is to deploy a
-minimal server that exposes the desired endpoint(s), using the
-`edx-configuration` Ansible playbooks. A [fork of
-`edx-configuration`](https://github.com/hastexo/edx-configuration/tree/hastexo/juniper/webhook-receiver)
-exists that defines [a `webhook_receiver`
-role](https://github.com/hastexo/edx-configuration/tree/hastexo/juniper/webhook-receiver/playbooks/roles/webhook_receiver)
-which you can add to your playbook.
+minimal server that exposes the desired endpoint(s).
+
+A [Tutor plugin](https://github.com/hastexo/tutor-contrib-webhook-receiver)
+exists to facilitate this, for Open edX platforms managed by
+[Tutor](https://docs.tutor.edly.io/).
 
 
 ## Webhook Sender Configuration Requirements
